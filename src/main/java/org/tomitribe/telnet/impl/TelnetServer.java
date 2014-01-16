@@ -69,20 +69,21 @@ public class TelnetServer implements TtyCodes {
             serverSocket = new ServerSocket(port);
             final Logger logger = Logger.getLogger(TelnetServer.class.getName());
             logger.info("Listening on " + serverSocket.getLocalPort());
-            while (running.get()) {
-                final Socket accept = serverSocket.accept();
-                final Thread thread = new Thread() {
-                    @Override
-                    public void run() {
+
+            final Socket accept = serverSocket.accept();
+            final Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    while (running.get()) {
                         try {
                             session(accept);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
-                };
-                thread.start();
-            }
+                }
+            };
+            thread.start();
         }
     }
 
