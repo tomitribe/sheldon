@@ -18,9 +18,7 @@ package org.tomitribe.telnet.adapter;
 
 import org.tomitribe.crest.Cmd;
 import org.tomitribe.crest.Commands;
-import org.tomitribe.telnet.api.TelnetListener;
 import org.tomitribe.telnet.impl.TelnetServer;
-import org.tomitribe.util.reflect.Reflection;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.ActivationSpec;
@@ -38,10 +36,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 @Connector(
-    description = "Telnet ResourceAdapter",
-    displayName = "Telnet ResourceAdapter",
-    eisType = "Telnet Adapter",
-    version = "1.0"
+        description = "Telnet ResourceAdapter",
+        displayName = "Telnet ResourceAdapter",
+        eisType = "Telnet Adapter",
+        version = "1.0"
 )
 public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter {
 
