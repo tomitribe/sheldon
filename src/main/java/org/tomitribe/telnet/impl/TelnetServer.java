@@ -17,8 +17,9 @@
 package org.tomitribe.telnet.impl;
 
 
-import org.tomitribe.telnet.adapter.TelnetActivationSpec;
-import org.tomitribe.telnet.api.TelnetListener;
+import org.tomitribe.crest.Cmd;
+import org.tomitribe.crest.Commands;
+import org.tomitribe.crest.api.Command;
 
 import java.io.Closeable;
 import java.io.DataInputStream;
@@ -33,45 +34,37 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 public class TelnetServer implements TtyCodes {
 
-    private final TelnetListener listener;
-
-    private final TelnetActivationSpec spec;
+    private final String prompt;
 
     private final int port;
 
-    private final Map<String, Cmd> cmds = new TreeMap<String, Cmd>();
+    private final Map<String, Cmd> commands = new ConcurrentHashMap<String, Cmd>();
 
     private final AtomicBoolean running = new AtomicBoolean();
     private ServerSocket serverSocket;
 
-    public TelnetServer(TelnetActivationSpec spec, TelnetListener listener, int port) {
+    public TelnetServer(String prompt, int port) {
         this.port = port;
-        this.spec = spec;
-        this.listener = listener;
+        this.prompt = prompt;
 
-        for (Cmd cmd : spec.getCmds()) {
-            this.cmds.put(cmd.getName(), cmd);
-        }
-
-        try {
-            cmds.put("help", new BuiltInCmd("help", this.getClass().getMethod("help", String.class)));
-            cmds.put("exit", new BuiltInCmd("exit", this.getClass().getMethod("exit")));
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+        final BuildIn buildIn = new BuildIn();
+        for (Method method : Commands.commands(BuildIn.class)) {
+            add(new Cmd(buildIn, method));
         }
     }
 
-    public TelnetListener getListener() {
-        return listener;
+    public void add(Cmd cmd) {
+        commands.put(cmd.getName(), cmd);
     }
 
-    public void activate() throws IOException {
+    public void start() throws IOException {
         if (running.compareAndSet(false, true)) {
             serverSocket = new ServerSocket(port);
             final Logger logger = Logger.getLogger(TelnetServer.class.getName());
@@ -93,7 +86,7 @@ public class TelnetServer implements TtyCodes {
         }
     }
 
-    public void deactivate() throws IOException {
+    public void stop() throws IOException {
         if (running.compareAndSet(true, false)) {
             try {
                 serverSocket.close();
@@ -150,7 +143,7 @@ public class TelnetServer implements TtyCodes {
 
         try {
 
-            out.print(TTY_Reset + TTY_Bright + spec.getPrompt() + " " + TTY_Reset);
+            out.print(TTY_Reset + TTY_Bright + this.prompt + " " + TTY_Reset);
 
             out.flush();
 
@@ -161,22 +154,22 @@ public class TelnetServer implements TtyCodes {
             final List<String> list = new ArrayList<String>();
             Collections.addAll(list, commandline.split(" +"));
 
-            final String command = list.remove(0);
-
+            final String command = (list.size() == 0) ? "help" : list.remove(0);
             final String[] args = list.toArray(new String[list.size()]);
 
-            final Cmd cmd = cmds.get(command);
+            final Cmd cmd = commands.get(command);
 
             if (cmd == null) {
 
-                out.print(command);
-
-                out.println(": command not found");
+                out.println("Unknown command: " + command);
+                out.println();
+                commands.get("help").exec();
+                throw new IllegalArgumentException();
 
             } else {
 
                 try {
-                    cmd.exec(listener, args, out);
+                    cmd.exec(args);
                 } catch (StopException stop) {
                     throw stop;
                 } catch (Throwable throwable) {
@@ -201,57 +194,33 @@ public class TelnetServer implements TtyCodes {
         }
     }
 
-    public class BuiltInCmd extends Cmd {
-        public BuiltInCmd(String name, Method method) {
-            super(name, method);
-        }
-
-        @Override
-        public void exec(Object impl, String[] args, PrintStream out) throws Throwable {
-            super.exec(TelnetServer.this, args, out);
-        }
-    }
-
-    public String help(String arg) {
-        final StringBuilder sb = new StringBuilder();
-
-        if (arg == null) {
-            for (String s : cmds.keySet()) {
-                sb.append(s).append("\n");
-            }
-        } else {
-            final Cmd cmd = cmds.get(arg);
-            if (cmd == null) {
-                sb.append("Unkown command: ").append(arg);
-            } else {
-                final Method method = cmd.getMethod();
-
-                sb.append(cmd.getName()).append(" ");
-
-                final Class<?>[] types = method.getParameterTypes();
-                for (Class<?> type : types) {
-                    sb.append("<").append(type.getSimpleName().toLowerCase()).append(">").append(" ");
-                }
-
-                if (types.length == 0) {
-                    sb.append("[no options]");
-                }
-            }
-        }
-
-        return sb.toString();
-    }
-
-    public void exit() throws StopException {
-        throw new StopException();
-    }
-
-    public static class StopException extends Exception {
+    public static class StopException extends RuntimeException {
         public StopException() {
         }
 
         public StopException(Throwable cause) {
             super(cause);
+        }
+    }
+
+    public class BuildIn {
+
+        @Command
+        public void exit() throws StopException {
+            throw new StopException();
+        }
+
+        @Command
+        public String help() {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("Commands:\n\n");
+
+            final TreeSet<String> cmds = new TreeSet<String>(commands.keySet());
+            for (String command : cmds) {
+                sb.append(String.format("   %-20s\n", command));
+            }
+
+            return sb.toString();
         }
     }
 }

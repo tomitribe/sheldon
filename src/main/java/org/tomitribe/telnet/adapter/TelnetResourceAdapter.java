@@ -16,8 +16,11 @@
  */
 package org.tomitribe.telnet.adapter;
 
+import org.tomitribe.crest.Cmd;
+import org.tomitribe.crest.Commands;
 import org.tomitribe.telnet.api.TelnetListener;
 import org.tomitribe.telnet.impl.TelnetServer;
+import org.tomitribe.util.reflect.Reflection;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.ActivationSpec;
@@ -31,8 +34,8 @@ import javax.transaction.xa.XAResource;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 @Connector(
     description = "Telnet ResourceAdapter",
@@ -42,7 +45,7 @@ import java.util.Map;
 )
 public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter {
 
-    private final Map<Integer, TelnetServer> activated = new HashMap<Integer, TelnetServer>();
+    private TelnetServer telnetServer;
 
     /**
      * Corresponds to the ra.xml <config-property>
@@ -52,6 +55,10 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
     @NotNull
     private int port;
 
+    @ConfigProperty(defaultValue = "prompt>")
+    @NotNull
+    private String prompt;
+
     public int getPort() {
         return port;
     }
@@ -60,10 +67,30 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
         this.port = port;
     }
 
+    public String getPrompt() {
+        return prompt;
+    }
+
+    public void setPrompt(String prompt) {
+        this.prompt = prompt;
+    }
+
     public void start(BootstrapContext bootstrapContext) throws ResourceAdapterInternalException {
+        telnetServer = new TelnetServer(prompt, port);
+        try {
+            telnetServer.start();
+        } catch (IOException e) {
+            throw new ResourceAdapterInternalException(e);
+        }
     }
 
     public void stop() {
+        try {
+            telnetServer.stop();
+        } catch (IOException e) {
+            // TODO log this... oh wait, no standard way to do that
+            e.printStackTrace();
+        }
     }
 
     public void endpointActivation(MessageEndpointFactory messageEndpointFactory, ActivationSpec activationSpec) throws ResourceException {
@@ -72,36 +99,43 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
         final MessageEndpoint messageEndpoint = messageEndpointFactory.createEndpoint(null);
 
         // This messageEndpoint instance is also castable to the ejbClass of the MDB
-        final TelnetListener telnetListener = (TelnetListener) messageEndpoint;
-
-        final TelnetServer telnetServer = new TelnetServer(telnetActivationSpec, telnetListener, port);
-
-        try {
-            telnetServer.activate();
-            activated.put(port, telnetServer);
-        } catch (IOException e) {
-            throw new ResourceException(e);
+        for (Method method : Commands.commands(telnetActivationSpec.getBeanClass())) {
+            telnetServer.add(new Cmd(method, new EndpointTarget(messageEndpoint)));
         }
     }
 
     public void endpointDeactivation(MessageEndpointFactory messageEndpointFactory, ActivationSpec activationSpec) {
-        final TelnetActivationSpec telnetActivationSpec = (TelnetActivationSpec) activationSpec;
-
-        final TelnetServer telnetServer = activated.remove(port);
-
-        try {
-            telnetServer.deactivate();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        final MessageEndpoint endpoint = (MessageEndpoint) telnetServer.getListener();
-
-        endpoint.release();
+        // TODO
+        // endpoint.release();
     }
 
     public XAResource[] getXAResources(ActivationSpec[] activationSpecs) throws ResourceException {
         return new XAResource[0];
     }
 
+    private static class EndpointTarget implements Cmd.Target {
+        private final MessageEndpoint messageEndpoint;
+
+        public EndpointTarget(MessageEndpoint messageEndpoint) {
+            this.messageEndpoint = messageEndpoint;
+        }
+
+        @Override
+        public Object invoke(Method method, Object... objects) throws InvocationTargetException, IllegalAccessException {
+
+            try {
+                try {
+                    messageEndpoint.beforeDelivery(method);
+
+                    return method.invoke(messageEndpoint, objects);
+                } finally {
+                    messageEndpoint.afterDelivery();
+                }
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            } catch (ResourceException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }
