@@ -18,6 +18,7 @@ package org.tomitribe.telnet.adapter;
 
 import org.tomitribe.crest.Cmd;
 import org.tomitribe.crest.Commands;
+import org.tomitribe.crest.Target;
 import org.tomitribe.telnet.impl.TelnetServer;
 
 import javax.resource.ResourceException;
@@ -34,6 +35,11 @@ import javax.validation.constraints.Size;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Connector(
         description = "Telnet ResourceAdapter",
@@ -96,23 +102,41 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
 
         final MessageEndpoint messageEndpoint = messageEndpointFactory.createEndpoint(null);
 
-        // This messageEndpoint instance is also castable to the ejbClass of the MDB
-        for (Method method : Commands.commands(telnetActivationSpec.getBeanClass())) {
-            telnetServer.add(new Cmd(method, new EndpointTarget(messageEndpoint)));
+        final EndpointTarget target = new EndpointTarget(messageEndpoint);
+        target.commands.addAll(Commands.get(telnetActivationSpec.getBeanClass(), target, null).values());
+
+        for (Cmd cmd : target.commands) {
+            telnetServer.add(cmd);
         }
+
+        targets.put(telnetActivationSpec, target);
     }
 
     public void endpointDeactivation(MessageEndpointFactory messageEndpointFactory, ActivationSpec activationSpec) {
-        // TODO
-        // endpoint.release();
+        final TelnetActivationSpec telnetActivationSpec = (TelnetActivationSpec) activationSpec;
+
+        final EndpointTarget endpointTarget = targets.get(telnetActivationSpec);
+        if (endpointTarget == null) {
+            throw new IllegalStateException("No EndpointTarget to undeploy for ActivationSpec " + activationSpec);
+        }
+
+        final List<Cmd> commands = telnetActivationSpec.getCommands();
+        for (Cmd command : commands) {
+            telnetServer.remove(command);
+        }
+
+        endpointTarget.messageEndpoint.release();
     }
 
     public XAResource[] getXAResources(ActivationSpec[] activationSpecs) throws ResourceException {
         return new XAResource[0];
     }
 
-    private static class EndpointTarget implements Cmd.Target {
+    final Map<TelnetActivationSpec, EndpointTarget> targets = new ConcurrentHashMap<TelnetActivationSpec, EndpointTarget>();
+
+    private static class EndpointTarget implements Target {
         private final MessageEndpoint messageEndpoint;
+        private final List<Cmd> commands = new ArrayList<Cmd>();
 
         public EndpointTarget(MessageEndpoint messageEndpoint) {
             this.messageEndpoint = messageEndpoint;

@@ -19,6 +19,7 @@ package org.superbiz;
 
 import org.tomitribe.crest.api.Command;
 import org.tomitribe.crest.api.Option;
+import org.tomitribe.crest.api.Required;
 import org.tomitribe.telnet.api.TelnetListener;
 
 import javax.ejb.MessageDriven;
@@ -32,7 +33,7 @@ public class FunBean implements TelnetListener {
     private final Properties properties = new Properties();
 
     @Command("get")
-    public String doGet(@Option("key") String key) {
+    public String doGet(String key) {
         return properties.getProperty(key);
     }
 

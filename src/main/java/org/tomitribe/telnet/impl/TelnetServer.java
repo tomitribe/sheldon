@@ -17,9 +17,10 @@
 package org.tomitribe.telnet.impl;
 
 
-import org.tomitribe.crest.Cmd;
+import org.tomitribe.crest.*;
 import org.tomitribe.crest.Commands;
 import org.tomitribe.crest.api.Command;
+import org.tomitribe.crest.api.StreamingOutput;
 
 import java.io.Closeable;
 import java.io.DataInputStream;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,23 +47,24 @@ public class TelnetServer implements TtyCodes {
 
     private final int port;
 
-    private final Map<String, Cmd> commands = new ConcurrentHashMap<String, Cmd>();
-
     private final AtomicBoolean running = new AtomicBoolean();
     private ServerSocket serverSocket;
+    private final Main main;
 
     public TelnetServer(String prompt, int port) {
         this.port = port;
         this.prompt = prompt;
 
-        final BuildIn buildIn = new BuildIn();
-        for (Method method : Commands.commands(BuildIn.class)) {
-            add(new Cmd(buildIn, method));
+        main = new Main();
+
+        final Map<String, Cmd> commands = Commands.get(new BuildIn());
+        for (Cmd cmd : commands.values()) {
+            main.add(cmd);
         }
     }
 
     public void add(Cmd cmd) {
-        commands.put(cmd.getName(), cmd);
+        main.add(cmd);
     }
 
     public void start() throws IOException {
@@ -70,12 +73,12 @@ public class TelnetServer implements TtyCodes {
             final Logger logger = Logger.getLogger(TelnetServer.class.getName());
             logger.info("Listening on " + serverSocket.getLocalPort());
 
-            final Socket accept = serverSocket.accept();
             final Thread thread = new Thread() {
                 @Override
                 public void run() {
                     while (running.get()) {
                         try {
+                            final Socket accept = serverSocket.accept();
                             session(accept);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -140,7 +143,7 @@ public class TelnetServer implements TtyCodes {
         }
     }
 
-    protected void prompt(DataInputStream in, PrintStream out) throws StopException {
+    protected void prompt(final DataInputStream in, final PrintStream out) throws StopException {
 
         try {
 
@@ -152,33 +155,25 @@ public class TelnetServer implements TtyCodes {
 
             if (commandline.length() < 1) return;
 
-            final List<String> list = new ArrayList<String>();
-            Collections.addAll(list, commandline.split(" +"));
+            final String[] args = commandline.split(" +");
 
-            final String command = (list.size() == 0) ? "help" : list.remove(0);
-            final String[] args = list.toArray(new String[list.size()]);
+            try {
+                final Environment env = new TelnetEnvironment(out, in);
 
-            final Cmd cmd = commands.get(command);
-
-            if (cmd == null) {
-
-                out.println("Unknown command: " + command);
-                out.println();
-                commands.get("help").exec();
-                throw new IllegalArgumentException();
-
-            } else {
-
-                try {
-                    cmd.exec(args);
-                } catch (StopException stop) {
-                    throw stop;
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace(out);
+                main.main(env, args);
+            }catch (CommandFailedException e) {
+                if (e.getCause() instanceof StopException) {
+                    throw (StopException) e.getCause();
                 }
-
+                out.println("Command Bean threw an Exception");
+                e.printStackTrace(out);
+            }catch (IllegalArgumentException iae) {
+//                out.println(iae.getMessage());
+            } catch (StopException stop) {
+                throw stop;
+            } catch (Throwable throwable) {
+                throwable.printStackTrace(out);
             }
-
 
         } catch (StopException stop) {
             throw stop;
@@ -195,6 +190,10 @@ public class TelnetServer implements TtyCodes {
         }
     }
 
+    public void remove(Cmd command) {
+        main.remove(command);
+    }
+
     public static class StopException extends RuntimeException {
         public StopException() {
         }
@@ -204,24 +203,40 @@ public class TelnetServer implements TtyCodes {
         }
     }
 
-    public class BuildIn {
+    private static class TelnetEnvironment implements Environment {
+        private final PrintStream out;
+        private final DataInputStream in;
 
+        public TelnetEnvironment(PrintStream out, DataInputStream in) {
+            this.out = out;
+            this.in = in;
+        }
+
+        @Override
+        public PrintStream getOutput() {
+            return out;
+        }
+
+        @Override
+        public PrintStream getError() {
+            return out;
+        }
+
+        @Override
+        public InputStream getInput() {
+            return in;
+        }
+
+        @Override
+        public Properties getProperties() {
+            return System.getProperties();
+        }
+    }
+
+    public class BuildIn {
         @Command
         public void exit() throws StopException {
             throw new StopException();
-        }
-
-        @Command
-        public String help() {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("Commands:\n\n");
-
-            final TreeSet<String> cmds = new TreeSet<String>(commands.keySet());
-            for (String command : cmds) {
-                sb.append(String.format("   %-20s\n", command));
-            }
-
-            return sb.toString();
         }
     }
 }
