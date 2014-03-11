@@ -17,29 +17,19 @@
 package org.tomitribe.telnet.impl;
 
 
-import org.tomitribe.crest.*;
-import org.tomitribe.crest.Commands;
-import org.tomitribe.crest.api.Command;
-import org.tomitribe.crest.api.StreamingOutput;
-
 import java.io.Closeable;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
-import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
+
+import org.tomitribe.crest.Cmd;
+import org.tomitribe.crest.Commands;
+import org.tomitribe.crest.Main;
 
 public class TelnetServer implements TtyCodes {
 
@@ -100,40 +90,23 @@ public class TelnetServer implements TtyCodes {
     }
 
     public void session(Socket socket) throws IOException {
-        InputStream telnetIn = null;
-        PrintStream telnetOut = null;
-
+    	InputStream in = socket.getInputStream();
+    	OutputStream out = socket.getOutputStream();
+    	
         try {
-            final InputStream in = socket.getInputStream();
-            final OutputStream out = socket.getOutputStream();
-
-            telnetIn = new TelnetInputStream(in, out);
-            telnetOut = new TelnetPrintStream(out);
-
-            telnetOut.println("");
-            telnetOut.println("type \'help\' for a list of commands");
-
-
-            final DataInputStream dataInputStream = new DataInputStream(telnetIn);
-
-            while (running.get()) {
-
-                prompt(dataInputStream, telnetOut);
-
-            }
-
+            new ConsoleSession(prompt).doSession(in, out, false);
         } catch (StopException s) {
             // exit normally
         } catch (Throwable t) {
             t.printStackTrace();
         } finally {
-            close(telnetIn);
-            close(telnetOut);
+            close(in);
+            close(out);
             if (socket != null) socket.close();
         }
     }
 
-    private static void close(Closeable closeable) {
+	private static void close(Closeable closeable) {
         if (closeable == null) return;
 
         try {
@@ -143,100 +116,7 @@ public class TelnetServer implements TtyCodes {
         }
     }
 
-    protected void prompt(final DataInputStream in, final PrintStream out) throws StopException {
-
-        try {
-
-            out.print(TTY_Reset + TTY_Bright + this.prompt + " " + TTY_Reset);
-
-            out.flush();
-
-            final String commandline = in.readLine().trim();
-
-            if (commandline.length() < 1) return;
-
-            final String[] args = commandline.split(" +");
-
-            try {
-                final Environment env = new TelnetEnvironment(out, in);
-
-                main.main(env, args);
-            }catch (CommandFailedException e) {
-                if (e.getCause() instanceof StopException) {
-                    throw (StopException) e.getCause();
-                }
-                out.println("Command Bean threw an Exception");
-                e.printStackTrace(out);
-            }catch (IllegalArgumentException iae) {
-//                out.println(iae.getMessage());
-            } catch (StopException stop) {
-                throw stop;
-            } catch (Throwable throwable) {
-                throwable.printStackTrace(out);
-            }
-
-        } catch (StopException stop) {
-            throw stop;
-        } catch (UnsupportedOperationException e) {
-
-            throw new StopException(e);
-
-        } catch (Throwable e) {
-
-            e.printStackTrace(new PrintStream(out));
-
-            throw new StopException(e);
-
-        }
-    }
-
     public void remove(Cmd command) {
         main.remove(command);
-    }
-
-    public static class StopException extends RuntimeException {
-        public StopException() {
-        }
-
-        public StopException(Throwable cause) {
-            super(cause);
-        }
-    }
-
-    private static class TelnetEnvironment implements Environment {
-        private final PrintStream out;
-        private final DataInputStream in;
-
-        public TelnetEnvironment(PrintStream out, DataInputStream in) {
-            this.out = out;
-            this.in = in;
-        }
-
-        @Override
-        public PrintStream getOutput() {
-            return out;
-        }
-
-        @Override
-        public PrintStream getError() {
-            return out;
-        }
-
-        @Override
-        public InputStream getInput() {
-            return in;
-        }
-
-        @Override
-        public Properties getProperties() {
-            return System.getProperties();
-        }
-    }
-
-    public class BuildIn {
-        @Command
-        public void exit() throws StopException {
-            throw new StopException();
-        }
     }
 }

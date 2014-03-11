@@ -19,6 +19,7 @@ package org.tomitribe.telnet.adapter;
 import org.tomitribe.crest.Cmd;
 import org.tomitribe.crest.Commands;
 import org.tomitribe.crest.Target;
+import org.tomitribe.ssh.impl.SshdServer;
 import org.tomitribe.telnet.impl.TelnetServer;
 
 import javax.resource.ResourceException;
@@ -32,6 +33,7 @@ import javax.resource.spi.endpoint.MessageEndpointFactory;
 import javax.transaction.xa.XAResource;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -81,6 +83,8 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
 
     public void start(BootstrapContext bootstrapContext) throws ResourceAdapterInternalException {
         telnetServer = new TelnetServer(prompt, port);
+        sshdServer = new SshdServer();
+        sshdServer.start();
         try {
             telnetServer.start();
         } catch (IOException e) {
@@ -91,6 +95,7 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
     public void stop() {
         try {
             telnetServer.stop();
+            sshdServer.stop();
         } catch (IOException e) {
             // TODO log this... oh wait, no standard way to do that
             e.printStackTrace();
@@ -133,6 +138,8 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
     }
 
     final Map<TelnetActivationSpec, EndpointTarget> targets = new ConcurrentHashMap<TelnetActivationSpec, EndpointTarget>();
+
+	private SshdServer sshdServer;
 
     private static class EndpointTarget implements Target {
         private final MessageEndpoint messageEndpoint;
