@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package org.tomitribe.telnet.impl;
-
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -90,9 +89,9 @@ public class TelnetServer implements TtyCodes {
     }
 
     public void session(Socket socket) throws IOException {
-    	InputStream in = socket.getInputStream();
-    	OutputStream out = socket.getOutputStream();
-    	
+        InputStream in = socket.getInputStream();
+        OutputStream out = socket.getOutputStream();
+
         try {
             new ConsoleSession(prompt).doSession(in, out, false);
         } catch (StopException s) {
@@ -102,12 +101,14 @@ public class TelnetServer implements TtyCodes {
         } finally {
             close(in);
             close(out);
-            if (socket != null) socket.close();
+            if (socket != null)
+                socket.close();
         }
     }
 
-	private static void close(Closeable closeable) {
-        if (closeable == null) return;
+    private static void close(Closeable closeable) {
+        if (closeable == null)
+            return;
 
         try {
             closeable.close();

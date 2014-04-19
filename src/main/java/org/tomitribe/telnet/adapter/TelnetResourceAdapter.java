@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -16,11 +16,13 @@
  */
 package org.tomitribe.telnet.adapter;
 
-import org.tomitribe.crest.Cmd;
-import org.tomitribe.crest.Commands;
-import org.tomitribe.crest.Target;
-import org.tomitribe.ssh.impl.SshdServer;
-import org.tomitribe.telnet.impl.TelnetServer;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.ActivationSpec;
@@ -34,21 +36,16 @@ import javax.transaction.xa.XAResource;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.tomitribe.crest.Cmd;
+import org.tomitribe.crest.Commands;
+import org.tomitribe.crest.Target;
+import org.tomitribe.ssh.impl.SshdServer;
+import org.tomitribe.telnet.impl.TelnetServer;
 
-@Connector(
-        description = "Telnet ResourceAdapter",
-        displayName = "Telnet ResourceAdapter",
-        eisType = "Telnet Adapter",
-        version = "1.0"
-)
+@Connector(description = "Telnet ResourceAdapter", 
+           displayName = "Telnet ResourceAdapter", 
+           eisType = "Telnet Adapter", 
+           version = "1.0")
 public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter {
 
     private TelnetServer telnetServer;
@@ -102,7 +99,8 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
         }
     }
 
-    public void endpointActivation(MessageEndpointFactory messageEndpointFactory, ActivationSpec activationSpec) throws ResourceException {
+    public void endpointActivation(MessageEndpointFactory messageEndpointFactory, ActivationSpec activationSpec)
+            throws ResourceException {
         final TelnetActivationSpec telnetActivationSpec = (TelnetActivationSpec) activationSpec;
 
         final MessageEndpoint messageEndpoint = messageEndpointFactory.createEndpoint(null);
@@ -137,9 +135,10 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
         return new XAResource[0];
     }
 
-    final Map<TelnetActivationSpec, EndpointTarget> targets = new ConcurrentHashMap<TelnetActivationSpec, EndpointTarget>();
+    final Map<TelnetActivationSpec, EndpointTarget> targets = 
+            new ConcurrentHashMap<TelnetActivationSpec, EndpointTarget>();
 
-	private SshdServer sshdServer;
+    private SshdServer sshdServer;
 
     private static class EndpointTarget implements Target {
         private final MessageEndpoint messageEndpoint;
@@ -150,7 +149,8 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
         }
 
         @Override
-        public Object invoke(Method method, Object... objects) throws InvocationTargetException, IllegalAccessException {
+        public Object invoke(Method method, Object... objects) 
+                throws InvocationTargetException, IllegalAccessException {
 
             try {
                 try {

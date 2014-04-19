@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -18,36 +18,36 @@ package org.tomitribe.telnet.impl;
 
 public interface TelnetCodes {
 
-    public static final int SE = 240;
+    int SE = 240;
 
-    public static final int NOP = 241;
+    int NOP = 241;
 
-    public static final int Data_Mark = 242;
+    int DATA_MARK = 242;
 
-    public static final int Break = 243;
+    int BREAK = 243;
 
-    public static final int Interrupt_Process = 244;
+    int INTERRUPT_PROCESS = 244;
 
-    public static final int Abort_output = 245;
+    int ABORT_OUTPUT = 245;
 
-    public static final int Are_You_There = 246;
+    int ARE_YOU_THERE = 246;
 
-    public static final int Erase_character = 247;
+    int ERASE_CHARACTER = 247;
 
-    public static final int Erase_Line = 248;
+    int ERASE_LINE = 248;
 
-    public static final int Go_ahead = 249;
+    int GO_AHEAD = 249;
 
-    public static final int SB = 250;
+    int SB = 250;
 
-    public static final int WILL = 251;
+    int WILL = 251;
 
-    public static final int WONT = 252;
+    int WONT = 252;
 
-    public static final int DO = 253;
+    int DO = 253;
 
-    public static final int DONT = 254;
+    int DONT = 254;
 
-    public static final int IAC = 255;
+    int IAC = 255;
 
 }
