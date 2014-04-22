@@ -19,7 +19,6 @@ package org.tomitribe.ssh.impl;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.openejb.loader.SystemInstance;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.common.util.SecurityUtils;
 import org.apache.sshd.server.PasswordAuthenticator;
@@ -31,14 +30,14 @@ public class SshdServer {
 
     private SshServer sshServer;
 
-    private static final String KEY_NAME = SystemInstance.get().getOptions().get("openejb.server.ssh.key", "ssh-key");
+    private static final String KEY_NAME = "ssh-key";
 
     public void start() {
         sshServer = SshServer.setUpDefaultServer();
         sshServer.setPort(2222);
         sshServer.setHost("0.0.0.0");
 
-        final String basePath = SystemInstance.get().getBase().getDirectory().getAbsolutePath();
+        final String basePath = new File(System.getProperty("catalina.home")).getAbsolutePath();
         if (SecurityUtils.isBouncyCastleRegistered()) {
             sshServer.setKeyPairProvider(new PEMGeneratorHostKeyProvider(new File(basePath, KEY_NAME + ".pem")
                     .getPath()));
