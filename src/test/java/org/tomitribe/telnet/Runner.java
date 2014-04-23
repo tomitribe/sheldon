@@ -21,8 +21,14 @@ import java.util.concurrent.TimeUnit;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.ResourceAdapterArchive;
+import org.jboss.shrinkwrap.descriptor.api.Descriptors;
+import org.jboss.shrinkwrap.descriptor.api.connector10.ConfigProperty;
+import org.jboss.shrinkwrap.descriptor.api.connector10.ConnectorDescriptor;
+import org.jboss.shrinkwrap.descriptor.api.connector10.Resourceadapter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -32,14 +38,26 @@ public class Runner {
     @Deployment(testable = false)
     public static EnterpriseArchive createDeployment() {
 
-
         final JavaArchive rarLib = ShrinkWrap.create(JavaArchive.class, "lib.jar");
         rarLib.addPackages(true, "org.tomitribe");
         System.out.println(rarLib.toString(true));
         System.out.println();
 
-        final EnterpriseArchive rar = ShrinkWrap.create(EnterpriseArchive.class, "test.rar");
-        rar.addAsModule(rarLib);
+        final ResourceAdapterArchive rar = ShrinkWrap.create(ResourceAdapterArchive.class, "test.rar");
+        rar.addAsLibraries(rarLib);
+
+        ConnectorDescriptor raXml = Descriptors.create(ConnectorDescriptor.class);
+        ConfigProperty<Resourceadapter<ConnectorDescriptor>> sshPortProperty = raXml.getOrCreateResourceadapter().createConfigProperty();
+        sshPortProperty.configPropertyName("sshPort");
+        sshPortProperty.configPropertyType("int");
+        sshPortProperty.configPropertyValue("2222");
+
+        ConfigProperty<Resourceadapter<ConnectorDescriptor>> telnetPortProperty = raXml.getOrCreateResourceadapter().createConfigProperty();
+        telnetPortProperty.configPropertyName("telnetPort");
+        telnetPortProperty.configPropertyType("int");
+        telnetPortProperty.configPropertyValue("2020");
+        
+        rar.setResourceAdapterXML(new StringAsset(raXml.exportAsString()));
         System.out.println(rar.toString(true));
         System.out.println();
 

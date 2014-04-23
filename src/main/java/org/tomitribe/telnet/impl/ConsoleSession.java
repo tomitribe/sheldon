@@ -22,31 +22,24 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.Map;
 
 import jline.Terminal;
 import jline.UnsupportedTerminal;
 import jline.console.ConsoleReader;
 
-import org.tomitribe.crest.Cmd;
 import org.tomitribe.crest.CommandFailedException;
-import org.tomitribe.crest.Commands;
 import org.tomitribe.crest.Environment;
 import org.tomitribe.crest.Main;
 
 public class ConsoleSession implements TtyCodes {
 
-    private final Main main = new Main();
+    private final Main main;
     private final String prompt;
 
-    public ConsoleSession(String prompt) {
+    public ConsoleSession(Main main, String prompt) {
         super();
+        this.main = main;
         this.prompt = prompt;
-
-        final Map<String, Cmd> commands = Commands.get(new BuildIn());
-        for (Cmd cmd : commands.values()) {
-            main.add(cmd);
-        }
     }
 
     public void doSession(InputStream in, OutputStream out, boolean ssh) throws IOException {

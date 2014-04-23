@@ -20,21 +20,31 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.sshd.SshServer;
+import org.apache.sshd.common.Factory;
 import org.apache.sshd.common.util.SecurityUtils;
+import org.apache.sshd.server.Command;
 import org.apache.sshd.server.PasswordAuthenticator;
 import org.apache.sshd.server.keyprovider.PEMGeneratorHostKeyProvider;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerSession;
+import org.tomitribe.telnet.impl.ConsoleSession;
 
 public class SshdServer {
 
-    private SshServer sshServer;
-
     private static final String KEY_NAME = "ssh-key";
+    
+    private SshServer sshServer;
+    private final ConsoleSession session;
+    private final int port;
+    
+    public SshdServer(ConsoleSession session, int port) {
+        this.session = session;
+        this.port = port;
+    }
 
     public void start() {
         sshServer = SshServer.setUpDefaultServer();
-        sshServer.setPort(2222);
+        sshServer.setPort(port);
         sshServer.setHost("0.0.0.0");
 
         final String basePath = new File(System.getProperty("catalina.home")).getAbsolutePath();
@@ -46,7 +56,13 @@ public class SshdServer {
                     .getPath()));
         }
 
-        sshServer.setShellFactory(new TomEEShellFactory());
+        sshServer.setShellFactory(new Factory<Command>() {
+            @Override
+            public Command create() {
+                return new TomEECommands(session);
+
+            }
+        });
         sshServer.setPasswordAuthenticator(new PasswordAuthenticator() {
 
             @Override

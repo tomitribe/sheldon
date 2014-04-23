@@ -22,38 +22,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
-import org.tomitribe.crest.Cmd;
-import org.tomitribe.crest.Commands;
-import org.tomitribe.crest.Main;
-
 public class TelnetServer implements TtyCodes {
 
-    private final String prompt;
-
     private final int port;
-
+    private final ConsoleSession session;
     private final AtomicBoolean running = new AtomicBoolean();
     private ServerSocket serverSocket;
-    private final Main main;
 
-    public TelnetServer(String prompt, int port) {
+    public TelnetServer(ConsoleSession session, int port) {
+        this.session = session;
         this.port = port;
-        this.prompt = prompt;
-
-        main = new Main();
-
-        final Map<String, Cmd> commands = Commands.get(new BuildIn());
-        for (Cmd cmd : commands.values()) {
-            main.add(cmd);
-        }
-    }
-
-    public void add(Cmd cmd) {
-        main.add(cmd);
     }
 
     public void start() throws IOException {
@@ -93,7 +74,7 @@ public class TelnetServer implements TtyCodes {
         OutputStream out = socket.getOutputStream();
 
         try {
-            new ConsoleSession(prompt).doSession(in, out, false);
+            session.doSession(in, out, false);
         } catch (StopException s) {
             // exit normally
         } catch (Throwable t) {
@@ -115,9 +96,5 @@ public class TelnetServer implements TtyCodes {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void remove(Cmd command) {
-        main.remove(command);
     }
 }

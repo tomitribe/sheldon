@@ -36,11 +36,11 @@ public class TomEECommands implements Command, Runnable, TtyCodes {
     private Environment env;
     private Thread thread;
 
-    private final String prompt;
+    private final ConsoleSession session;
 
-    public TomEECommands(String prompt) {
+    public TomEECommands(ConsoleSession session) {
         super();
-        this.prompt = prompt;
+        this.session = session;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class TomEECommands implements Command, Runnable, TtyCodes {
     @Override
     public void run() {
         try {
-            new ConsoleSession(prompt).doSession(in, out, true);
+            session.doSession(in, out, true);
         } catch (StopException s) {
             // exit normally
         } catch (Throwable t) {

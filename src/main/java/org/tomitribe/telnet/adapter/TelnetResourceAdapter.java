@@ -38,8 +38,11 @@ import javax.validation.constraints.Size;
 
 import org.tomitribe.crest.Cmd;
 import org.tomitribe.crest.Commands;
+import org.tomitribe.crest.Main;
 import org.tomitribe.crest.Target;
 import org.tomitribe.ssh.impl.SshdServer;
+import org.tomitribe.telnet.impl.BuildIn;
+import org.tomitribe.telnet.impl.ConsoleSession;
 import org.tomitribe.telnet.impl.TelnetServer;
 
 @Connector(description = "Telnet ResourceAdapter", 
@@ -49,27 +52,42 @@ import org.tomitribe.telnet.impl.TelnetServer;
 public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter {
 
     private TelnetServer telnetServer;
+    private SshdServer sshdServer;
 
     /**
      * Corresponds to the ra.xml <config-property>
      */
-    @Size(min = 1, max = 0xFFFF)
-    @ConfigProperty(defaultValue = "2020")
-    @NotNull
-    private int port;
-
     @ConfigProperty(defaultValue = "prompt>")
     @NotNull
     private String prompt;
+    
+    @Size(min = 1, max = 0xFFFF)
+    @ConfigProperty
+    private Integer sshPort;
 
-    public int getPort() {
-        return port;
+    @Size(min = 1, max = 0xFFFF)
+    @ConfigProperty
+    private Integer telnetPort;
+    
+    private Main main;
+    private ConsoleSession session;
+    
+    public int getSshPort() {
+        return sshPort;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setSshPort(int sshPort) {
+        this.sshPort = sshPort;
     }
 
+    public int getTelnetPort() {
+        return telnetPort;
+    }
+
+    public void setTelnetPort(int telnetPort) {
+        this.telnetPort = telnetPort;
+    }
+    
     public String getPrompt() {
         return prompt;
     }
@@ -79,23 +97,44 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
     }
 
     public void start(BootstrapContext bootstrapContext) throws ResourceAdapterInternalException {
-        telnetServer = new TelnetServer(prompt, port);
-        sshdServer = new SshdServer();
-        sshdServer.start();
-        try {
-            telnetServer.start();
-        } catch (IOException e) {
-            throw new ResourceAdapterInternalException(e);
+        
+        main = new Main();
+        
+        // add built-in commands
+        final Map<String, Cmd> commands = Commands.get(new BuildIn());
+        for (Cmd cmd : commands.values()) {
+            main.add(cmd);
+        }
+        
+        session = new ConsoleSession(main, prompt);
+        
+        if (sshPort != null) {
+          sshdServer = new SshdServer(session, sshPort);
+          sshdServer.start();
+        }
+        
+        if (telnetPort != null) {
+            telnetServer = new TelnetServer(session, telnetPort);
+            try {
+                telnetServer.start();
+            } catch (IOException e) {
+                throw new ResourceAdapterInternalException(e);
+            }
         }
     }
 
     public void stop() {
         try {
-            telnetServer.stop();
-            sshdServer.stop();
+            if (telnetServer != null) {
+                telnetServer.stop();
+            }
         } catch (IOException e) {
             // TODO log this... oh wait, no standard way to do that
             e.printStackTrace();
+        }
+
+        if (sshdServer != null) {
+            sshdServer.stop();
         }
     }
 
@@ -109,7 +148,7 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
         target.commands.addAll(Commands.get(telnetActivationSpec.getBeanClass(), target, null).values());
 
         for (Cmd cmd : target.commands) {
-            telnetServer.add(cmd);
+            main.add(cmd);
         }
 
         targets.put(telnetActivationSpec, target);
@@ -125,7 +164,7 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
 
         final List<Cmd> commands = telnetActivationSpec.getCommands();
         for (Cmd command : commands) {
-            telnetServer.remove(command);
+            main.remove(command);
         }
 
         endpointTarget.messageEndpoint.release();
@@ -138,7 +177,7 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
     final Map<TelnetActivationSpec, EndpointTarget> targets = 
             new ConcurrentHashMap<TelnetActivationSpec, EndpointTarget>();
 
-    private SshdServer sshdServer;
+
 
     private static class EndpointTarget implements Target {
         private final MessageEndpoint messageEndpoint;
