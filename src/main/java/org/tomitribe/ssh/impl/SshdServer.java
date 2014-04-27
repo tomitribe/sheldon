@@ -19,12 +19,13 @@ package org.tomitribe.ssh.impl;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.openejb.loader.SystemInstance;
+import org.apache.openejb.spi.SecurityService;
 import org.apache.sshd.SshServer;
 import org.apache.sshd.common.Factory;
 import org.apache.sshd.common.util.SecurityUtils;
 import org.apache.sshd.server.Command;
 import org.apache.sshd.server.PasswordAuthenticator;
-import org.apache.sshd.server.jaas.JaasPasswordAuthenticator;
 import org.apache.sshd.server.keyprovider.PEMGeneratorHostKeyProvider;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerSession;
@@ -66,16 +67,25 @@ public class SshdServer {
             }
         });
         
-        JaasPasswordAuthenticator authenticator = new JaasPasswordAuthenticator();
-        authenticator.setDomain(domain);
-//        sshServer.setPasswordAuthenticator(authenticator);
-        
-        // for testing
         sshServer.setPasswordAuthenticator(new PasswordAuthenticator() {
 
             @Override
             public boolean authenticate(String username, String password, ServerSession session) {
-                return username != null && password != null && password.equals(username);
+                
+                boolean validUser = false;
+                try {
+                    SecurityService securityService = SystemInstance.get().getComponent(SecurityService.class);
+                    Object user = securityService.login(domain, username, password);
+                    if (user != null) {
+                        validUser = true;
+                        securityService.logout(user);    
+                    }
+                } catch (Exception e) {
+                    validUser = false;
+                }
+                
+                return validUser;
+                
             }
         });
 

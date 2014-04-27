@@ -68,6 +68,11 @@ public class Runner {
         telnetPortProperty.configPropertyName("telnetPort");
         telnetPortProperty.configPropertyType("int");
         telnetPortProperty.configPropertyValue("2020");
+
+        ConfigProperty<Resourceadapter<ConnectorDescriptor>> domainProperty = raXml.getOrCreateResourceadapter().createConfigProperty();
+        domainProperty.configPropertyName("domain");
+        domainProperty.configPropertyType("java.lang.String");
+        domainProperty.configPropertyValue("UserDatabase");
         
         rar.setResourceAdapterXML(new StringAsset(raXml.exportAsString()));
         System.out.println(rar.toString(true));

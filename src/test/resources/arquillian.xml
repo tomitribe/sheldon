@@ -23,6 +23,7 @@
   <container qualifier="tomee" default="true">
     <configuration>
       <property name="classifier">plus</property>
+      <property name="conf">src/test/resources/conf</property>
     </configuration>
   </container>
 </arquillian>
