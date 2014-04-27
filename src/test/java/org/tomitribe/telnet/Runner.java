@@ -16,6 +16,7 @@
  */
 package org.tomitribe.telnet;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -29,6 +30,7 @@ import org.jboss.shrinkwrap.descriptor.api.Descriptors;
 import org.jboss.shrinkwrap.descriptor.api.connector10.ConfigProperty;
 import org.jboss.shrinkwrap.descriptor.api.connector10.ConnectorDescriptor;
 import org.jboss.shrinkwrap.descriptor.api.connector10.Resourceadapter;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -38,8 +40,18 @@ public class Runner {
     @Deployment(testable = false)
     public static EnterpriseArchive createDeployment() {
 
+        File[] deps = Maven.resolver().resolve("org.tomitribe:tomitribe-crest:1.0.0-SNAPSHOT", "org.tomitribe:tomitribe-util:1.0.0-SNAPSHOT", "org.apache.sshd:sshd-core:0.9.0", "jline:jline:2.11").withTransitivity().asFile();
+        
+        final JavaArchive apiJar = ShrinkWrap.create(JavaArchive.class, "api.jar");
+        apiJar.addPackages(true, "org.tomitribe.telnet.api");
+        System.out.println(apiJar.toString(true));
+        System.out.println();
+
+        
         final JavaArchive rarLib = ShrinkWrap.create(JavaArchive.class, "lib.jar");
-        rarLib.addPackages(true, "org.tomitribe");
+        rarLib.addPackages(false, "org.tomitribe.ssh.impl", "org.tomitribe.telnet.adapter", "org.tomitribe.telnet.impl");
+//        rarLib.setManifest(new StringAsset("Class-Path: api.jar"));
+        
         System.out.println(rarLib.toString(true));
         System.out.println();
 
@@ -63,12 +75,13 @@ public class Runner {
 
         final JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "test.jar");
         jar.addPackages(true, "org.superbiz");
+//        jar.setManifest(new StringAsset("Class-Path: api.jar"));
         System.out.println(jar.toString(true));
         System.out.println();
 
         // Make the EAR
         final EnterpriseArchive ear = ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
-                .addAsModule(rar).addAsModule(jar);
+                .addAsModule(rar).addAsModule(jar).addAsLibraries(apiJar).addAsLibraries(deps);
         System.out.println(ear.toString(true));
         System.out.println();
 

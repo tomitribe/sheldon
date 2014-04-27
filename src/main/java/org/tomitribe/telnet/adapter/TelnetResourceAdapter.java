@@ -60,6 +60,10 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
     @ConfigProperty(defaultValue = "prompt>")
     @NotNull
     private String prompt;
+
+    @ConfigProperty
+    @NotNull
+    private String domain;
     
     @Size(min = 1, max = 0xFFFF)
     @ConfigProperty
@@ -95,6 +99,14 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
     public void setPrompt(String prompt) {
         this.prompt = prompt;
     }
+    
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
 
     public void start(BootstrapContext bootstrapContext) throws ResourceAdapterInternalException {
         
@@ -109,7 +121,7 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
         session = new ConsoleSession(main, prompt);
         
         if (sshPort != null) {
-          sshdServer = new SshdServer(session, sshPort);
+          sshdServer = new SshdServer(session, sshPort, domain);
           sshdServer.start();
         }
         

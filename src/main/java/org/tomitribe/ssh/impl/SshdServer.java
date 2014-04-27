@@ -24,6 +24,7 @@ import org.apache.sshd.common.Factory;
 import org.apache.sshd.common.util.SecurityUtils;
 import org.apache.sshd.server.Command;
 import org.apache.sshd.server.PasswordAuthenticator;
+import org.apache.sshd.server.jaas.JaasPasswordAuthenticator;
 import org.apache.sshd.server.keyprovider.PEMGeneratorHostKeyProvider;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerSession;
@@ -36,10 +37,12 @@ public class SshdServer {
     private SshServer sshServer;
     private final ConsoleSession session;
     private final int port;
+    private final String domain;
     
-    public SshdServer(ConsoleSession session, int port) {
+    public SshdServer(ConsoleSession session, int port, String domain) {
         this.session = session;
         this.port = port;
+        this.domain = domain;
     }
 
     public void start() {
@@ -60,9 +63,14 @@ public class SshdServer {
             @Override
             public Command create() {
                 return new TomEECommands(session);
-
             }
         });
+        
+        JaasPasswordAuthenticator authenticator = new JaasPasswordAuthenticator();
+        authenticator.setDomain(domain);
+//        sshServer.setPasswordAuthenticator(authenticator);
+        
+        // for testing
         sshServer.setPasswordAuthenticator(new PasswordAuthenticator() {
 
             @Override
