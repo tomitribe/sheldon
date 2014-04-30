@@ -33,7 +33,13 @@
         <groupId>org.tomitribe</groupId>
         <artifactId>telnet-connector-api</artifactId>
         <version>${project.version}</version>
-        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.tomitribe</groupId>
+        <artifactId>telnet-connector-impl</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+        <type>rar</type>
       </dependency>
       <dependency>
         <groupId>org.tomitribe</groupId>
@@ -122,11 +128,6 @@
           <dependency>
             <groupId>org.jboss.shrinkwrap.resolver</groupId>
             <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
-            <scope>test</scope>
-          </dependency>
-          <dependency>
-            <groupId>org.apache.openejb</groupId>
-            <artifactId>apache-tomee</artifactId>
             <scope>test</scope>
           </dependency>
         </dependencies>

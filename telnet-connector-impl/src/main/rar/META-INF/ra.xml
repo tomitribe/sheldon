@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<connector xmlns="http://java.sun.com/xml/ns/javaee">
+  <description>Telnet ResourceAdapter</description>
+  <display-name>Telnet ResourceAdapter</display-name>
+  <eis-type>Telnet Adapter</eis-type>
+  <resourceadapter-version>1.0</resourceadapter-version>
+  <resourceadapter>
+    <config-property>
+      <config-property-name>sshPort</config-property-name>
+      <config-property-type>int</config-property-type>
+      <config-property-value>2222</config-property-value>
+    </config-property>
+    <config-property>
+      <config-property-name>telnetPort</config-property-name>
+      <config-property-type>int</config-property-type>
+      <config-property-value>2020</config-property-value>
+    </config-property>
+    <config-property>
+      <config-property-name>domain</config-property-name>
+      <config-property-type>java.lang.String</config-property-type>
+      <config-property-value>UserDatabase</config-property-value>
+    </config-property>
+    <config-property>
+      <config-property-name>prompt</config-property-name>
+      <config-property-type>java.lang.String</config-property-type>
+      <config-property-value>prompt&gt;</config-property-value>
+    </config-property>
+  </resourceadapter>
+</connector>

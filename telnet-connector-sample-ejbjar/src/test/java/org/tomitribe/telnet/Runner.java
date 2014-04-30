@@ -40,7 +40,8 @@ public class Runner {
     @Deployment(testable = false)
     public static EnterpriseArchive createDeployment() {
 
-        File[] deps = Maven.resolver().resolve("org.tomitribe:tomitribe-crest:1.0.0-SNAPSHOT", "org.tomitribe:tomitribe-util:1.0.0-SNAPSHOT", "org.apache.sshd:sshd-core:0.9.0", "jline:jline:2.11").withTransitivity().asFile();
+        File[] deps = Maven.resolver().resolve("org.tomitribe:tomitribe-crest:1.0.0-SNAPSHOT", "org.tomitribe:tomitribe-util:1.0.0-SNAPSHOT").withTransitivity().asFile();
+        File[] rarDeps = Maven.resolver().resolve("org.apache.sshd:sshd-core:0.9.0", "jline:jline:2.11").withTransitivity().asFile();
         
         final JavaArchive apiJar = ShrinkWrap.create(JavaArchive.class, "api.jar");
         apiJar.addPackages(true, "org.tomitribe.telnet.api");
@@ -56,7 +57,7 @@ public class Runner {
         System.out.println();
 
         final ResourceAdapterArchive rar = ShrinkWrap.create(ResourceAdapterArchive.class, "test.rar");
-        rar.addAsLibraries(rarLib);
+        rar.addAsLibraries(rarLib).addAsLibraries(rarDeps);
 
         ConnectorDescriptor raXml = Descriptors.create(ConnectorDescriptor.class);
         ConfigProperty<Resourceadapter<ConnectorDescriptor>> sshPortProperty = raXml.getOrCreateResourceadapter().createConfigProperty();
