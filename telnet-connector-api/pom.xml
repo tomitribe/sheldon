@@ -47,7 +47,7 @@
   </repositories>
   <dependencies>
       <dependency>
-        <groupId>org.apache.openejb</groupId>
+        <groupId>javax</groupId>
         <artifactId>javaee-api</artifactId>
         <scope>provided</scope>
       </dependency>

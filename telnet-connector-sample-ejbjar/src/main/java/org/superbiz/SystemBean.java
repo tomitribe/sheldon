@@ -24,7 +24,7 @@ import javax.ejb.MessageDriven;
 import java.util.Map;
 import java.util.TreeSet;
 
-@MessageDriven
+@MessageDriven(name = "System")
 public class SystemBean implements TelnetListener {
 
     @Command

@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-@MessageDriven
+@MessageDriven(name = "Fun")
 public class FunBean implements TelnetListener {
 
     private final Properties properties = new Properties();

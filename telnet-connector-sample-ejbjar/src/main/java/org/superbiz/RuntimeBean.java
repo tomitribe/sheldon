@@ -25,7 +25,7 @@ import org.tomitribe.util.SizeUnit;
 
 import javax.ejb.MessageDriven;
 
-@MessageDriven
+@MessageDriven(name = "Runtime")
 public class RuntimeBean implements TelnetListener {
 
     @Command

@@ -51,7 +51,7 @@ public class SshdServer {
         sshServer.setPort(port);
         sshServer.setHost("0.0.0.0");
 
-        final String basePath = new File(System.getProperty("catalina.home")).getAbsolutePath();
+        final String basePath = new File(System.getProperty("user.dir")).getAbsolutePath();
         if (SecurityUtils.isBouncyCastleRegistered()) {
             sshServer.setKeyPairProvider(new PEMGeneratorHostKeyProvider(new File(basePath, KEY_NAME + ".pem")
                     .getPath()));

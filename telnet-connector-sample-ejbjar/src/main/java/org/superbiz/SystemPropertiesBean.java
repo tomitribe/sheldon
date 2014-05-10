@@ -25,7 +25,7 @@ import org.tomitribe.crest.val.Directory;
 import org.tomitribe.crest.val.Exists;
 import org.tomitribe.telnet.api.TelnetListener;
 
-@MessageDriven
+@MessageDriven(name = "SystemProperties")
 public class SystemPropertiesBean implements TelnetListener {
 
     @Command

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<jboss xmlns="http://www.jboss.com/xml/ns/javaee"   
+    xmlns:jee="http://java.sun.com/xml/ns/javaee"  
+    xmlns:mdb="urn:resource-adapter-binding"  
+    xmlns:security="urn:security">  
+  
+    <jee:assembly-descriptor>
+        <mdb:resource-adapter-binding>
+        	<jee:ejb-name>Fun</jee:ejb-name> 
+            <mdb:resource-adapter-name>telnet-connector-sample-ear-1.0.0-SNAPSHOT.ear#telnet-connector-impl-1.0.0-SNAPSHOT.rar</mdb:resource-adapter-name>  
+        </mdb:resource-adapter-binding>  
+        <mdb:resource-adapter-binding>
+        	<jee:ejb-name>Runtime</jee:ejb-name> 
+            <mdb:resource-adapter-name>telnet-connector-sample-ear-1.0.0-SNAPSHOT.ear#telnet-connector-impl-1.0.0-SNAPSHOT.rar</mdb:resource-adapter-name>  
+        </mdb:resource-adapter-binding>  
+        <mdb:resource-adapter-binding>
+        	<jee:ejb-name>System</jee:ejb-name> 
+            <mdb:resource-adapter-name>telnet-connector-sample-ear-1.0.0-SNAPSHOT.ear#telnet-connector-impl-1.0.0-SNAPSHOT.rar</mdb:resource-adapter-name>  
+        </mdb:resource-adapter-binding>  
+        <mdb:resource-adapter-binding>
+        	<jee:ejb-name>SystemProperties</jee:ejb-name> 
+            <mdb:resource-adapter-name>telnet-connector-sample-ear-1.0.0-SNAPSHOT.ear#telnet-connector-impl-1.0.0-SNAPSHOT.rar</mdb:resource-adapter-name>  
+        </mdb:resource-adapter-binding>  
+    </jee:assembly-descriptor>  
+</jboss> 

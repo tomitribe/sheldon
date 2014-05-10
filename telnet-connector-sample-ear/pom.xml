@@ -49,6 +49,7 @@
         <artifactId>maven-ear-plugin</artifactId>
         <version>2.9</version>
         <configuration>
+          <initializeInOrder>true</initializeInOrder>
           <version>6</version>
           <defaultLibBundleDir>lib</defaultLibBundleDir>
           <archive>
@@ -58,14 +59,14 @@
             </manifest>
           </archive>
           <modules>
-            <ejbModule>
-              <groupId>org.tomitribe</groupId>
-              <artifactId>telnet-connector-sample-ejb</artifactId>
-            </ejbModule>
             <rarModule>
               <groupId>org.tomitribe</groupId>
               <artifactId>telnet-connector-impl</artifactId>
             </rarModule>
+            <ejbModule>
+              <groupId>org.tomitribe</groupId>
+              <artifactId>telnet-connector-sample-ejb</artifactId>
+            </ejbModule>
           </modules>
         </configuration>
       </plugin>

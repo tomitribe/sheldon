@@ -32,9 +32,10 @@ import javax.resource.spi.Connector;
 import javax.resource.spi.ResourceAdapterInternalException;
 import javax.resource.spi.endpoint.MessageEndpoint;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
+import javax.resource.spi.work.Work;
+import javax.resource.spi.work.WorkManager;
 import javax.transaction.xa.XAResource;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import org.tomitribe.crest.Cmd;
 import org.tomitribe.crest.Commands;
@@ -45,10 +46,7 @@ import org.tomitribe.telnet.impl.BuildIn;
 import org.tomitribe.telnet.impl.ConsoleSession;
 import org.tomitribe.telnet.impl.TelnetServer;
 
-@Connector(description = "Telnet ResourceAdapter", 
-           displayName = "Telnet ResourceAdapter", 
-           eisType = "Telnet Adapter", 
-           version = "1.0")
+@Connector(description = "Telnet ResourceAdapter", displayName = "Telnet ResourceAdapter", eisType = "Telnet Adapter", version = "1.0")
 public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter {
 
     private TelnetServer telnetServer;
@@ -61,37 +59,35 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
     @NotNull
     private String prompt;
 
-    @ConfigProperty
+    @ConfigProperty(defaultValue = "UserDatabase")
     @NotNull
     private String domain;
-    
-    @Size(min = 1, max = 0xFFFF)
-    @ConfigProperty
+
+    @ConfigProperty(defaultValue = "2222")
     private Integer sshPort;
 
-    @Size(min = 1, max = 0xFFFF)
-    @ConfigProperty
+    @ConfigProperty(defaultValue = "2020")
     private Integer telnetPort;
-    
+
     private Main main;
     private ConsoleSession session;
-    
-    public int getSshPort() {
+
+    public Integer getSshPort() {
         return sshPort;
     }
 
-    public void setSshPort(int sshPort) {
+    public void setSshPort(Integer sshPort) {
         this.sshPort = sshPort;
     }
 
-    public int getTelnetPort() {
+    public Integer getTelnetPort() {
         return telnetPort;
     }
 
-    public void setTelnetPort(int telnetPort) {
+    public void setTelnetPort(Integer telnetPort) {
         this.telnetPort = telnetPort;
     }
-    
+
     public String getPrompt() {
         return prompt;
     }
@@ -99,7 +95,7 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
     public void setPrompt(String prompt) {
         this.prompt = prompt;
     }
-    
+
     public String getDomain() {
         return domain;
     }
@@ -109,22 +105,23 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
     }
 
     public void start(BootstrapContext bootstrapContext) throws ResourceAdapterInternalException {
-        
+
+        workManager = bootstrapContext.getWorkManager();
         main = new Main();
-        
+
         // add built-in commands
         final Map<String, Cmd> commands = Commands.get(new BuildIn());
         for (Cmd cmd : commands.values()) {
             main.add(cmd);
         }
-        
+
         session = new ConsoleSession(main, prompt);
-        
+
         if (sshPort != null) {
-          sshdServer = new SshdServer(session, sshPort, domain);
-          sshdServer.start();
+            sshdServer = new SshdServer(session, sshPort, domain);
+            sshdServer.start();
         }
-        
+
         if (telnetPort != null) {
             telnetServer = new TelnetServer(session, telnetPort);
             try {
@@ -150,20 +147,39 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
         }
     }
 
-    public void endpointActivation(MessageEndpointFactory messageEndpointFactory, ActivationSpec activationSpec)
-            throws ResourceException {
+    public void endpointActivation(final MessageEndpointFactory messageEndpointFactory,
+            final ActivationSpec activationSpec) throws ResourceException {
         final TelnetActivationSpec telnetActivationSpec = (TelnetActivationSpec) activationSpec;
 
-        final MessageEndpoint messageEndpoint = messageEndpointFactory.createEndpoint(null);
+        workManager.scheduleWork(new Work() {
 
-        final EndpointTarget target = new EndpointTarget(messageEndpoint);
-        target.commands.addAll(Commands.get(telnetActivationSpec.getBeanClass(), target, null).values());
+            @Override
+            public void run() {
+                try {
+                    final MessageEndpoint messageEndpoint = messageEndpointFactory.createEndpoint(null);
 
-        for (Cmd cmd : target.commands) {
-            main.add(cmd);
-        }
+                    final EndpointTarget target = new EndpointTarget(messageEndpoint);
+                    final Class<?> endpointClass = telnetActivationSpec.getBeanClass() != null ? telnetActivationSpec
+                            .getBeanClass() : messageEndpointFactory.getEndpointClass();
 
-        targets.put(telnetActivationSpec, target);
+                    target.commands.addAll(Commands.get(endpointClass, target, null).values());
+
+                    for (Cmd cmd : target.commands) {
+                        main.add(cmd);
+                    }
+
+                    targets.put(telnetActivationSpec, target);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void release() {
+            }
+
+        });
+
     }
 
     public void endpointDeactivation(MessageEndpointFactory messageEndpointFactory, ActivationSpec activationSpec) {
@@ -186,10 +202,8 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
         return new XAResource[0];
     }
 
-    final Map<TelnetActivationSpec, EndpointTarget> targets = 
-            new ConcurrentHashMap<TelnetActivationSpec, EndpointTarget>();
-
-
+    final Map<TelnetActivationSpec, EndpointTarget> targets = new ConcurrentHashMap<TelnetActivationSpec, EndpointTarget>();
+    private WorkManager workManager;
 
     private static class EndpointTarget implements Target {
         private final MessageEndpoint messageEndpoint;
@@ -200,8 +214,7 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
         }
 
         @Override
-        public Object invoke(Method method, Object... objects) 
-                throws InvocationTargetException, IllegalAccessException {
+        public Object invoke(Method method, Object... objects) throws InvocationTargetException, IllegalAccessException {
 
             try {
                 try {
@@ -218,4 +231,49 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
             }
         }
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((domain == null) ? 0 : domain.hashCode());
+        result = prime * result + ((prompt == null) ? 0 : prompt.hashCode());
+        result = prime * result + ((sshPort == null) ? 0 : sshPort.hashCode());
+        result = prime * result + ((telnetPort == null) ? 0 : telnetPort.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        TelnetResourceAdapter other = (TelnetResourceAdapter) obj;
+        if (domain == null) {
+            if (other.domain != null)
+                return false;
+        } else if (!domain.equals(other.domain))
+            return false;
+        if (prompt == null) {
+            if (other.prompt != null)
+                return false;
+        } else if (!prompt.equals(other.prompt))
+            return false;
+        if (sshPort == null) {
+            if (other.sshPort != null)
+                return false;
+        } else if (!sshPort.equals(other.sshPort))
+            return false;
+        if (telnetPort == null) {
+            if (other.telnetPort != null)
+                return false;
+        } else if (!telnetPort.equals(other.telnetPort))
+            return false;
+        return true;
+    }
+    
+    
 }
