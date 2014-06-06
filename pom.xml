@@ -85,6 +85,7 @@
   <modules>
     <module>telnet-connector-api</module>
     <module>telnet-connector-impl</module>
+    <module>telnet-connector-rar</module>
     <module>telnet-connector-sample-ejbjar</module>
     <module>telnet-connector-sample-ear</module>
   </modules>

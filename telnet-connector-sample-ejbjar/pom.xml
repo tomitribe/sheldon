@@ -45,7 +45,6 @@
         <artifactId>telnet-connector-impl</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
-        <type>rar</type>
       </dependency>
       <dependency>
         <groupId>org.tomitribe</groupId>
