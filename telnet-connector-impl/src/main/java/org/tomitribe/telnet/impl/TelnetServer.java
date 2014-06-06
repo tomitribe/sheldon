@@ -25,12 +25,16 @@ import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
-public class TelnetServer implements TtyCodes {
+public class TelnetServer implements TtyCodes, TelnetConstants {
 
     private final int port;
     private final ConsoleSession session;
     private final AtomicBoolean running = new AtomicBoolean();
     private ServerSocket serverSocket;
+
+    public TelnetServer(ConsoleSession session) {
+        this(session, DEFAULT_PORT);
+    }
 
     public TelnetServer(ConsoleSession session, int port) {
         this.session = session;

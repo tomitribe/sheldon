@@ -30,15 +30,18 @@ import org.apache.sshd.server.keyprovider.PEMGeneratorHostKeyProvider;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.apache.sshd.server.session.ServerSession;
 import org.tomitribe.telnet.impl.ConsoleSession;
+import org.tomitribe.telnet.impl.TtyCodes;
 
-public class SshdServer {
+public class SshdServer implements SshdConstants {
 
-    private static final String KEY_NAME = "ssh-key";
-    
     private SshServer sshServer;
     private final ConsoleSession session;
     private final int port;
     private final String domain;
+
+    public SshdServer(ConsoleSession session, String domain) {
+        this(session, DEFAULT_PORT, domain);
+    }
     
     public SshdServer(ConsoleSession session, int port, String domain) {
         this.session = session;
@@ -51,12 +54,12 @@ public class SshdServer {
         sshServer.setPort(port);
         sshServer.setHost("0.0.0.0");
 
-        final String basePath = new File(System.getProperty("user.dir")).getAbsolutePath();
+
         if (SecurityUtils.isBouncyCastleRegistered()) {
-            sshServer.setKeyPairProvider(new PEMGeneratorHostKeyProvider(new File(basePath, KEY_NAME + ".pem")
+            sshServer.setKeyPairProvider(new PEMGeneratorHostKeyProvider(new File(BASE_PATH, KEY_NAME + ".pem")
                     .getPath()));
         } else {
-            sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(new File(basePath, KEY_NAME + ".ser")
+            sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(new File(BASE_PATH, KEY_NAME + ".ser")
                     .getPath()));
         }
 

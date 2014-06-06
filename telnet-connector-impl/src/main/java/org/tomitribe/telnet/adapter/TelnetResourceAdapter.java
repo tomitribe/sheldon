@@ -108,28 +108,44 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
 
         workManager = bootstrapContext.getWorkManager();
         main = new Main();
+        loadCommands();
+        createConsoleSession();
+        startSshd();
+        startTelnet();
+    }
 
+    private void createConsoleSession() {
+        session = new ConsoleSession(main, prompt);
+    }
+
+    private void loadCommands() {
         // add built-in commands
         final Map<String, Cmd> commands = Commands.get(new BuildIn());
         for (Cmd cmd : commands.values()) {
             main.add(cmd);
         }
+    }
 
-        session = new ConsoleSession(main, prompt);
-
-        if (sshPort != null) {
-            sshdServer = new SshdServer(session, sshPort, domain);
-            sshdServer.start();
-        }
-
+    private void startTelnet() throws ResourceAdapterInternalException {
         if (telnetPort != null) {
             telnetServer = new TelnetServer(session, telnetPort);
-            try {
-                telnetServer.start();
-            } catch (IOException e) {
-                throw new ResourceAdapterInternalException(e);
-            }
+        } else {
+            telnetServer = new TelnetServer(session);
         }
+        try {
+            telnetServer.start();
+        } catch (IOException e) {
+            throw new ResourceAdapterInternalException(e);
+        }
+    }
+
+    private void startSshd() {
+        if (sshPort != null) {
+            sshdServer = new SshdServer(session, sshPort, domain);
+        } else {
+            sshdServer = new SshdServer(session, domain);
+        }
+        sshdServer.start();
     }
 
     public void stop() {
