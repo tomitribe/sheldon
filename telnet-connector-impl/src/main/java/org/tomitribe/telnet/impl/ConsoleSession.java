@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
+import org.tomitribe.telnet.util.Utils;
 import jline.Terminal;
 import jline.UnsupportedTerminal;
 import jline.console.ConsoleReader;
@@ -49,7 +50,7 @@ public class ConsoleSession implements TtyCodes {
                 super.write(i);
 
                 // workaround for MacOSX!! reset line after CR..
-                if (isMac() && i == ConsoleReader.CR.toCharArray()[0]) {
+                if (Utils.isMac() && i == ConsoleReader.CR.toCharArray()[0]) {
                     super.write(ConsoleReader.RESET_LINE);
                 }
             }
@@ -101,10 +102,6 @@ public class ConsoleSession implements TtyCodes {
         } catch (Throwable throwable) {
             throwable.printStackTrace(ps);
         }
-    }
-
-    protected boolean isMac() {
-        return System.getProperty("os.name").startsWith("Mac OS X");
     }
 
 }

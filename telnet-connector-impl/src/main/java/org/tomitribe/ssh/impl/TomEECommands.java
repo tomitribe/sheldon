@@ -23,11 +23,14 @@ import java.io.OutputStream;
 import org.apache.sshd.server.Command;
 import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.ExitCallback;
+import org.apache.sshd.server.SessionAware;
+import org.apache.sshd.server.session.ServerSession;
+import org.tomitribe.telnet.adapter.ContextRunnable;
 import org.tomitribe.telnet.impl.ConsoleSession;
 import org.tomitribe.telnet.impl.StopException;
 import org.tomitribe.telnet.impl.TtyCodes;
 
-public class TomEECommands implements Command, Runnable, TtyCodes {
+public class TomEECommands implements Command, Runnable, TtyCodes, SessionAware {
 
     private OutputStream err;
     private ExitCallback cbk;
@@ -36,11 +39,16 @@ public class TomEECommands implements Command, Runnable, TtyCodes {
     private Environment env;
     private Thread thread;
 
-    private final ConsoleSession session;
+    private final ConsoleSession consoleSession;
+    private final String domain;
+    private final ContextRunnable contextRunnable;
+    private ServerSession session;
 
-    public TomEECommands(ConsoleSession session) {
+    public TomEECommands(ConsoleSession session, String domain, ContextRunnable contextRunnable) {
         super();
-        this.session = session;
+        this.consoleSession = session;
+        this.domain = domain;
+        this.contextRunnable = contextRunnable;
     }
 
     @Override
@@ -77,14 +85,27 @@ public class TomEECommands implements Command, Runnable, TtyCodes {
 
     @Override
     public void run() {
-        try {
-            session.doSession(in, out, true);
-        } catch (StopException s) {
-            // exit normally
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
 
-        cbk.onExit(0);
+        contextRunnable.run(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    consoleSession.doSession(in, out, true);
+                } catch (StopException s) {
+                    // exit normally
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+
+                cbk.onExit(0);
+            }
+        }, session.getUsername(), session.getAttribute(SshdServer.CREDENTIAL).getValue(), domain);
+
+    }
+
+    @Override
+    public void setSession(ServerSession session) {
+        this.session = session;
     }
 }

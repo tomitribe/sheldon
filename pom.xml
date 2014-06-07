@@ -146,7 +146,7 @@
 
   <profiles>
 
-    <profile>
+    <!-- <profile>
       <id>tomee-embedded</id>
       <activation>
         <activeByDefault>true</activeByDefault>
@@ -165,10 +165,13 @@
           </dependency>
         </dependencies>
       </dependencyManagement>
-    </profile>
+    </profile>-->
 
     <profile>
       <id>tomee-plus-remote</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>      
       <properties>
         <tomee.version>1.6.0</tomee.version>
         <tomee.classifier>plus</tomee.classifier>
