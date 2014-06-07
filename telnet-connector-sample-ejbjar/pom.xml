@@ -71,9 +71,9 @@
 
     <profile>
       <id>tomee-embedded</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
+      <!--<activation>-->
+        <!--<activeByDefault>true</activeByDefault>-->
+      <!--</activation>-->
         <dependencies>
           <dependency>
             <groupId>org.apache.openejb</groupId>
@@ -91,7 +91,7 @@
     <profile>
       <id>tomee-plus-remote</id>
       <properties>
-        <tomee.version>1.6.0</tomee.version>
+        <tomee.version>1.7.0-SNAPSHOT</tomee.version>
         <tomee.classifier>plus</tomee.classifier>
       </properties>
       <build>
