@@ -29,11 +29,23 @@ import javax.resource.spi.ActivationSpec;
 import javax.resource.spi.BootstrapContext;
 import javax.resource.spi.ConfigProperty;
 import javax.resource.spi.Connector;
+import javax.resource.spi.ResourceAdapter;
 import javax.resource.spi.ResourceAdapterInternalException;
 import javax.resource.spi.endpoint.MessageEndpoint;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
+import javax.resource.spi.work.SecurityContext;
 import javax.resource.spi.work.Work;
+import javax.resource.spi.work.WorkContext;
+import javax.resource.spi.work.WorkContextProvider;
+import javax.resource.spi.work.WorkException;
 import javax.resource.spi.work.WorkManager;
+import javax.security.auth.Subject;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.UnsupportedCallbackException;
+import javax.security.auth.message.callback.CallerPrincipalCallback;
+import javax.security.auth.message.callback.GroupPrincipalCallback;
+import javax.security.auth.message.callback.PasswordValidationCallback;
 import javax.transaction.xa.XAResource;
 import javax.validation.constraints.NotNull;
 
@@ -47,7 +59,7 @@ import org.tomitribe.telnet.impl.ConsoleSession;
 import org.tomitribe.telnet.impl.TelnetServer;
 
 @Connector(description = "Telnet ResourceAdapter", displayName = "Telnet ResourceAdapter", eisType = "Telnet Adapter", version = "1.0")
-public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter {
+public class TelnetResourceAdapter implements ResourceAdapter, ContextRunnable {
 
     private TelnetServer telnetServer;
     private SshdServer sshdServer;
@@ -118,12 +130,12 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
         session = new ConsoleSession(main, prompt);
 
         if (sshPort != null) {
-            sshdServer = new SshdServer(session, sshPort, domain);
+            sshdServer = new SshdServer(session, sshPort, domain, this);
             sshdServer.start();
         }
 
         if (telnetPort != null) {
-            telnetServer = new TelnetServer(session, telnetPort);
+            telnetServer = new TelnetServer(session, telnetPort, domain, this);
             try {
                 telnetServer.start();
             } catch (IOException e) {
@@ -205,6 +217,90 @@ public class TelnetResourceAdapter implements javax.resource.spi.ResourceAdapter
 
     final Map<TelnetActivationSpec, EndpointTarget> targets = new ConcurrentHashMap<TelnetActivationSpec, EndpointTarget>();
     private WorkManager workManager;
+
+    @Override
+    public void run(Runnable runnable, String username, String password, String domain) {
+
+        // create a work with a security context
+        RunnableWork runnableWork = new RunnableWork(runnable);
+        runnableWork.getWorkContexts().add(new MySecurityContext(username, password, domain));
+
+        // get the work manager to execute asynchronously
+        try {
+            workManager.startWork(runnableWork);
+        } catch (WorkException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static class RunnableWork implements Work, WorkContextProvider {
+
+        private final List<WorkContext> workContexts = new ArrayList<WorkContext>();
+        private final Runnable runnable;
+        private final ClassLoader classLoader;
+
+        public RunnableWork(Runnable runnable) {
+            this.runnable = runnable;
+            this.classLoader = Thread.currentThread().getContextClassLoader();
+        }
+
+        @Override
+        public void release() {
+
+        }
+
+        @Override
+        public void run() {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(classLoader);
+            runnable.run();
+            Thread.currentThread().setContextClassLoader(cl);
+        }
+
+        @Override
+        public List<WorkContext> getWorkContexts() {
+            return workContexts;
+        }
+    }
+
+    public static class MySecurityContext extends SecurityContext {
+
+        private final String username;
+        private final String password;
+        private final String domain;
+
+        public MySecurityContext(String username, String password, String domain) {
+            this.username = username;
+            this.password = password;
+            this.domain = domain;
+        }
+
+        @Override
+        public void setupSecurityContext(CallbackHandler handler, Subject executionSubject, Subject serviceSubject) {
+            List<Callback> callbacks = new ArrayList<Callback>();
+
+            GroupPrincipalCallback gpc = new GroupPrincipalCallback(executionSubject, null);
+            callbacks.add(gpc);
+
+            // add CallerPrincipalCallback so we can check if AppServer supports it
+            CallerPrincipalCallback cpc = new CallerPrincipalCallback(executionSubject, username);
+            callbacks.add(cpc);
+
+            PasswordValidationCallback pvc = new PasswordValidationCallback(executionSubject, username, password.toCharArray());
+            callbacks.add(pvc);
+
+            Callback callbackArray[] = new Callback[callbacks.size()];
+            try {
+                handler.handle(callbacks.toArray(callbackArray));
+
+            } catch (UnsupportedCallbackException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     private static class EndpointTarget implements Target {
         private final MessageEndpoint messageEndpoint;

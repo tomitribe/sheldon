@@ -68,28 +68,11 @@
     </dependencies>
 
   <profiles>
-
-    <profile>
-      <id>tomee-embedded</id>
-      <!--<activation>-->
-        <!--<activeByDefault>true</activeByDefault>-->
-      <!--</activation>-->
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.openejb</groupId>
-            <artifactId>arquillian-tomee-embedded</artifactId>
-            <scope>test</scope>
-          </dependency>
-          <dependency>
-            <groupId>org.jboss.shrinkwrap.resolver</groupId>
-            <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
-            <scope>test</scope>
-          </dependency>
-        </dependencies>
-    </profile>
-
     <profile>
       <id>tomee-plus-remote</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
       <properties>
         <tomee.version>1.7.0-SNAPSHOT</tomee.version>
         <tomee.classifier>plus</tomee.classifier>

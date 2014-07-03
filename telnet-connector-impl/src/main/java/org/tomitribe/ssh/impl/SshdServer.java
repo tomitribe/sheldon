@@ -16,30 +16,47 @@
  */
 package org.tomitribe.ssh.impl;
 
-import org.apache.sshd.SshServer;
-import org.apache.sshd.common.util.SecurityUtils;
-import org.apache.sshd.server.keyprovider.PEMGeneratorHostKeyProvider;
-import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
-import org.tomitribe.commands.factories.TomEEComandsFactory;
-import org.tomitribe.authenticator.DomainAuthenticator;
-import org.tomitribe.telnet.impl.ConsoleSession;
-
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.sshd.SshServer;
+import org.apache.sshd.common.Session;
+import org.apache.sshd.common.util.SecurityUtils;
+import org.apache.sshd.server.keyprovider.PEMGeneratorHostKeyProvider;
+import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
+import org.tomitribe.authenticator.DomainAuthenticator;
+import org.tomitribe.commands.factories.TomEEComandsFactory;
+import org.tomitribe.telnet.adapter.ContextRunnable;
+import org.tomitribe.telnet.impl.ConsoleSession;
+
 public class SshdServer {
 
-    private static final String KEY_NAME = "ssh-key";
+    public static class Credential {
+        private final String value;
 
+        public Credential(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    public static final Session.AttributeKey<Credential> CREDENTIAL = new Session.AttributeKey<Credential>();
+    private static final String KEY_NAME = "ssh-key";
+    
     private SshServer sshServer;
     private final ConsoleSession session;
     private final int port;
     private final String domain;
+    private final ContextRunnable contextRunnable;
 
-    public SshdServer(ConsoleSession session, int port, String domain) {
+    public SshdServer(ConsoleSession session, int port, String domain, ContextRunnable contextRunnable) {
         this.session = session;
         this.port = port;
         this.domain = domain;
+        this.contextRunnable = contextRunnable;
     }
 
     public void start() {
@@ -56,7 +73,7 @@ public class SshdServer {
                     .getPath()));
         }
 
-        sshServer.setShellFactory(new TomEEComandsFactory(session));
+        sshServer.setShellFactory(new TomEEComandsFactory(session, domain, contextRunnable));
         sshServer.setPasswordAuthenticator(new DomainAuthenticator(domain));
 
         try {

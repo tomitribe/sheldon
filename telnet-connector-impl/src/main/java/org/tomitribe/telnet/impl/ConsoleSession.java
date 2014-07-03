@@ -30,6 +30,7 @@ import jline.console.ConsoleReader;
 import org.tomitribe.crest.CommandFailedException;
 import org.tomitribe.crest.Environment;
 import org.tomitribe.crest.Main;
+import org.tomitribe.telnet.util.Utils;
 
 public class ConsoleSession implements TtyCodes {
 
@@ -49,7 +50,7 @@ public class ConsoleSession implements TtyCodes {
                 super.write(i);
 
                 // workaround for MacOSX!! reset line after CR..
-                if (isMac() && i == ConsoleReader.CR.toCharArray()[0]) {
+                if (Utils.isMac() && i == ConsoleReader.CR.toCharArray()[0]) {
                     super.write(ConsoleReader.RESET_LINE);
                 }
             }
@@ -101,10 +102,6 @@ public class ConsoleSession implements TtyCodes {
         } catch (Throwable throwable) {
             throwable.printStackTrace(ps);
         }
-    }
-
-    protected boolean isMac() {
-        return System.getProperty("os.name").startsWith("Mac OS X");
     }
 
 }
