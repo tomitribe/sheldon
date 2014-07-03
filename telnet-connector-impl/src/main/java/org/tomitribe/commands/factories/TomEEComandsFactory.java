@@ -20,18 +20,23 @@ package org.tomitribe.commands.factories;
 import org.apache.sshd.common.Factory;
 import org.apache.sshd.server.Command;
 import org.tomitribe.commands.TomEECommands;
+import org.tomitribe.telnet.adapter.ContextRunnable;
 import org.tomitribe.telnet.impl.ConsoleSession;
 
 public class TomEEComandsFactory implements Factory<Command> {
 
-    private ConsoleSession session;
+    private final ConsoleSession session;
+    private final String domain;
+    private final ContextRunnable contextRunnable;
 
-    public TomEEComandsFactory(ConsoleSession session) {
+    public TomEEComandsFactory(ConsoleSession session, String domain, ContextRunnable contextRunnable) {
         this.session = session;
+        this.domain = domain;
+        this.contextRunnable = contextRunnable;
     }
 
     @Override
     public Command create() {
-        return new TomEECommands(session);
+        return new TomEECommands(session, domain, contextRunnable);
     }
 }

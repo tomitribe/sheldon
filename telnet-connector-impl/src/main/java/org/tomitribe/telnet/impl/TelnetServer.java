@@ -16,7 +16,15 @@
  */
 package org.tomitribe.telnet.impl;
 
+import jline.UnsupportedTerminal;
+import jline.console.ConsoleReader;
+
+import org.tomitribe.authenticator.DomainAuthenticator;
+import org.tomitribe.telnet.adapter.ContextRunnable;
+import org.tomitribe.telnet.util.Utils;
+
 import java.io.Closeable;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,13 +36,17 @@ import java.util.logging.Logger;
 public class TelnetServer implements TtyCodes {
 
     private final int port;
+    private final String domain;
+    private final ContextRunnable contextRunner;
     private final ConsoleSession session;
     private final AtomicBoolean running = new AtomicBoolean();
     private ServerSocket serverSocket;
 
-    public TelnetServer(ConsoleSession session, int port) {
+    public TelnetServer(ConsoleSession session, int port, String domain, ContextRunnable contextRunner) {
         this.session = session;
         this.port = port;
+        this.domain = domain;
+        this.contextRunner = contextRunner;
     }
 
     public void start() throws IOException {
@@ -70,22 +82,70 @@ public class TelnetServer implements TtyCodes {
         }
     }
 
-    public void session(Socket socket) throws IOException {
-        InputStream in = socket.getInputStream();
-        OutputStream out = socket.getOutputStream();
+    public void session(final Socket socket) throws IOException {
+        final InputStream in = socket.getInputStream();
+        final OutputStream out = socket.getOutputStream();
 
+        FilterOutputStream fo = new FilterOutputStream(out) {
+            @Override
+            public void write(final int i) throws IOException {
+                super.write(i);
+
+                // workaround for MacOSX!! reset line after CR..
+                if (Utils.isMac() && i == ConsoleReader.CR.toCharArray()[0]) {
+                    super.write(ConsoleReader.RESET_LINE);
+                }
+            }
+        };
+
+        final ConsoleReader consoleReader = new ConsoleReader(in, fo, new UnsupportedTerminal());
+        final String username = consoleReader.readLine("login:");
+        final String password = consoleReader.readLine("password:", new Character((char) 0));
         try {
-            session.doSession(in, out, false);
-        } catch (StopException s) {
-            // exit normally
-        } catch (Throwable t) {
-            t.printStackTrace();
-        } finally {
-            close(in);
-            close(out);
-            if (socket != null)
-                socket.close();
+            if (!new DomainAuthenticator(domain).authenticate(username, password, null)) {
+                consoleReader.println("login failed ");
+                consoleReader.flush();
+
+                // close the connection
+                close(in);
+                close(out);
+                if (socket != null) {
+                    try {
+                        socket.close();
+                    } catch (Exception e) {
+                        // ignore
+                    }
+                }
+                return;
+            }
+        } catch (Exception e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
         }
+
+        contextRunner.run(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    session.doSession(in, out, false);
+                } catch (StopException s) {
+                    // exit normally
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                } finally {
+                    close(in);
+                    close(out);
+                    if (socket != null) {
+                        try {
+                            socket.close();
+                        } catch (Exception e) {
+                            // ignore
+                        }
+                    }
+                }
+            }
+        }, username, password, domain);
     }
 
     private static void close(Closeable closeable) {
