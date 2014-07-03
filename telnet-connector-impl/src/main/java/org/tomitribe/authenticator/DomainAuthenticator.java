@@ -21,6 +21,8 @@ import org.apache.openejb.loader.SystemInstance;
 import org.apache.openejb.spi.SecurityService;
 import org.apache.sshd.server.PasswordAuthenticator;
 import org.apache.sshd.server.session.ServerSession;
+import org.tomitribe.ssh.impl.SshdServer;
+import org.tomitribe.ssh.impl.SshdServer.Credential;
 
 public class DomainAuthenticator implements PasswordAuthenticator {
 
@@ -43,6 +45,10 @@ public class DomainAuthenticator implements PasswordAuthenticator {
             }
         } catch (Exception e) {
             validUser = false;
+        }
+        
+        if (session != null) {
+            session.setAttribute(SshdServer.CREDENTIAL, new Credential(password));
         }
 
         return validUser;
