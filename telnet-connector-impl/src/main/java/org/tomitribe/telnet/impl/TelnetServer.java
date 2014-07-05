@@ -33,6 +33,8 @@ import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
+import javax.resource.spi.work.WorkException;
+
 public class TelnetServer implements TtyCodes {
 
     private final int port;
@@ -102,7 +104,7 @@ public class TelnetServer implements TtyCodes {
         final String username = consoleReader.readLine("login:");
         final String password = consoleReader.readLine("password:", new Character((char) 0));
         try {
-            if (!new DomainAuthenticator(domain).authenticate(username, password, null)) {
+            if (!new DomainAuthenticator(domain, contextRunner).authenticate(username, password, null)) {
                 consoleReader.println("login failed ");
                 consoleReader.flush();
 
@@ -123,29 +125,42 @@ public class TelnetServer implements TtyCodes {
             e1.printStackTrace();
         }
 
-        contextRunner.run(new Runnable() {
+        try {
+            contextRunner.run(new Runnable() {
 
-            @Override
-            public void run() {
-                try {
-                    session.doSession(in, out, false);
-                } catch (StopException s) {
-                    // exit normally
-                } catch (Throwable t) {
-                    t.printStackTrace();
-                } finally {
-                    close(in);
-                    close(out);
-                    if (socket != null) {
-                        try {
-                            socket.close();
-                        } catch (Exception e) {
-                            // ignore
+                @Override
+                public void run() {
+                    try {
+                        session.doSession(in, out, false);
+                    } catch (StopException s) {
+                        // exit normally
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    } finally {
+                        close(in);
+                        close(out);
+                        if (socket != null) {
+                            try {
+                                socket.close();
+                            } catch (Exception e) {
+                                // ignore
+                            }
                         }
                     }
                 }
+            }, username, password, domain);
+        } catch (WorkException e) {
+        } finally {
+            close(in);
+            close(out);
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (Exception e) {
+                    // ignore
+                }
             }
-        }, username, password, domain);
+        }
     }
 
     private static void close(Closeable closeable) {

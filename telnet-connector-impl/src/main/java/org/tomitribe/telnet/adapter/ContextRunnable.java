@@ -16,8 +16,10 @@
  */
 package org.tomitribe.telnet.adapter;
 
+import javax.resource.spi.work.WorkException;
+
 public interface ContextRunnable {
 
-    void run(Runnable runnable, String username, String password, String domain);
+    void run(Runnable runnable, String username, String password, String domain) throws WorkException;
 
 }
