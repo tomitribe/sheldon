@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -219,18 +220,15 @@ public class TelnetResourceAdapter implements ResourceAdapter, ContextRunnable {
     private WorkManager workManager;
 
     @Override
-    public void run(Runnable runnable, String username, String password, String domain) {
+    public void run(Runnable runnable, String username, String password, String domain) throws WorkException {
 
         // create a work with a security context
         RunnableWork runnableWork = new RunnableWork(runnable);
         runnableWork.getWorkContexts().add(new MySecurityContext(username, password, domain));
 
         // get the work manager to execute asynchronously
-        try {
-            workManager.startWork(runnableWork);
-        } catch (WorkException e) {
-            e.printStackTrace();
-        }
+        workManager.startWork(runnableWork);
+        
     }
 
     public static class RunnableWork implements Work, WorkContextProvider {
@@ -251,10 +249,39 @@ public class TelnetResourceAdapter implements ResourceAdapter, ContextRunnable {
 
         @Override
         public void run() {
+            if (requiresAuthentication() && (! isAuthenticated())) {
+                throw new NotAuthenticatedException();
+            }
+            
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(classLoader);
             runnable.run();
             Thread.currentThread().setContextClassLoader(cl);
+        }
+
+        private boolean isAuthenticated() {
+            final MySecurityContext securityContext = getSecurityContext();
+            if (securityContext == null) {
+                return false;
+            }
+            
+            return securityContext.isAuthenticated();
+        }
+        
+        private boolean requiresAuthentication() {
+            return (getSecurityContext() != null);
+        }
+        
+        private MySecurityContext getSecurityContext() {
+            final Iterator<WorkContext> iterator = getWorkContexts().iterator();
+            while (iterator.hasNext()) {
+                WorkContext workContext = (WorkContext) iterator.next();
+                if (workContext instanceof MySecurityContext) {
+                    return (MySecurityContext) workContext;
+                }
+            }
+            
+            return null;
         }
 
         @Override
@@ -268,6 +295,7 @@ public class TelnetResourceAdapter implements ResourceAdapter, ContextRunnable {
         private final String username;
         private final String password;
         private final String domain;
+        private boolean authenticated = false;
 
         public MySecurityContext(String username, String password, String domain) {
             this.username = username;
@@ -276,17 +304,17 @@ public class TelnetResourceAdapter implements ResourceAdapter, ContextRunnable {
         }
 
         @Override
-        public void setupSecurityContext(CallbackHandler handler, Subject executionSubject, Subject serviceSubject) {
+        public void setupSecurityContext(final CallbackHandler handler, final Subject executionSubject, final Subject serviceSubject) {
             List<Callback> callbacks = new ArrayList<Callback>();
 
-            GroupPrincipalCallback gpc = new GroupPrincipalCallback(executionSubject, null);
+            final GroupPrincipalCallback gpc = new GroupPrincipalCallback(executionSubject, null);
             callbacks.add(gpc);
 
             // add CallerPrincipalCallback so we can check if AppServer supports it
-            CallerPrincipalCallback cpc = new CallerPrincipalCallback(executionSubject, username);
+            final CallerPrincipalCallback cpc = new CallerPrincipalCallback(executionSubject, username);
             callbacks.add(cpc);
 
-            PasswordValidationCallback pvc = new PasswordValidationCallback(executionSubject, username, password.toCharArray());
+            final PasswordValidationCallback pvc = new PasswordValidationCallback(executionSubject, username, password.toCharArray());
             callbacks.add(pvc);
 
             Callback callbackArray[] = new Callback[callbacks.size()];
@@ -298,6 +326,12 @@ public class TelnetResourceAdapter implements ResourceAdapter, ContextRunnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            
+            this.authenticated = pvc.getResult();
+        }
+
+        public boolean isAuthenticated() {
+            return authenticated;
         }
     }
 

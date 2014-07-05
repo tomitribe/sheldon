@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.resource.spi.work.WorkException;
+
 import org.apache.sshd.server.Command;
 import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.ExitCallback;
@@ -86,23 +88,25 @@ public class TomEECommands implements Command, Runnable, TtyCodes, SessionAware 
 
     @Override
     public void run() {
+        try {
+            contextRunnable.run(new Runnable() {
 
-        contextRunnable.run(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        consoleSession.doSession(in, out, true);
+                    } catch (StopException s) {
+                        // exit normally
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
 
-            @Override
-            public void run() {
-                try {
-                    consoleSession.doSession(in, out, true);
-                } catch (StopException s) {
-                    // exit normally
-                } catch (Throwable t) {
-                    t.printStackTrace();
+                    cbk.onExit(0);
                 }
-
-                cbk.onExit(0);
-            }
-        }, session.getUsername(), session.getAttribute(SshdServer.CREDENTIAL).getValue(), domain);
-
+            }, session.getUsername(), session.getAttribute(SshdServer.CREDENTIAL).getValue(), domain);
+        } catch (WorkException e) {
+            cbk.onExit(0);
+        }
     }
 
     @Override

@@ -74,7 +74,7 @@ public class SshdServer {
         }
 
         sshServer.setShellFactory(new TomEEComandsFactory(session, domain, contextRunnable));
-        sshServer.setPasswordAuthenticator(new DomainAuthenticator(domain));
+        sshServer.setPasswordAuthenticator(new DomainAuthenticator(domain, contextRunnable));
 
         try {
             sshServer.start();

@@ -17,41 +17,46 @@
 
 package org.tomitribe.authenticator;
 
-import org.apache.openejb.loader.SystemInstance;
-import org.apache.openejb.spi.SecurityService;
+import javax.resource.spi.work.WorkException;
+
 import org.apache.sshd.server.PasswordAuthenticator;
 import org.apache.sshd.server.session.ServerSession;
 import org.tomitribe.ssh.impl.SshdServer;
 import org.tomitribe.ssh.impl.SshdServer.Credential;
+import org.tomitribe.telnet.adapter.ContextRunnable;
+import org.tomitribe.telnet.adapter.NotAuthenticatedException;
 
 public class DomainAuthenticator implements PasswordAuthenticator {
 
     private final String domain;
+    private final ContextRunnable contextRunnable;
 
-    public DomainAuthenticator(String domain) {
+    public DomainAuthenticator(final String domain, final ContextRunnable contextRunnable) {
         this.domain = domain;
+        this.contextRunnable = contextRunnable;
     }
 
     @Override
     public boolean authenticate(String username, String password, ServerSession session) {
-
-        boolean validUser = false;
         try {
-            SecurityService securityService = SystemInstance.get().getComponent(SecurityService.class);
-            Object user = securityService.login(domain, username, password);
-            if (user != null) {
-                validUser = true;
-                securityService.logout(user);
-            }
-        } catch (Exception e) {
-            validUser = false;
+            contextRunnable.run(new Runnable() {
+
+                @Override
+                public void run() {
+                    // don't actually need to do anything here, just make sure this work object can be run
+                    // with the credentials provided
+                }
+                
+            }, username, password, domain);
+        } catch (WorkException t) {
+            t.printStackTrace();
+            return false;
         }
         
         if (session != null) {
             session.setAttribute(SshdServer.CREDENTIAL, new Credential(password));
         }
-
-        return validUser;
-
+        
+        return true;
     }
 }
