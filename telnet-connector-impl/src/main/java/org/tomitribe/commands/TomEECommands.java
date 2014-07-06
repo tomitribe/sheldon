@@ -20,15 +20,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.resource.spi.work.WorkException;
-
 import org.apache.sshd.server.Command;
 import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.ExitCallback;
 import org.apache.sshd.server.SessionAware;
 import org.apache.sshd.server.session.ServerSession;
 import org.tomitribe.ssh.impl.SshdServer;
-import org.tomitribe.telnet.adapter.ContextRunnable;
+import org.tomitribe.telnet.adapter.SecurityHandler;
 import org.tomitribe.telnet.impl.ConsoleSession;
 import org.tomitribe.telnet.impl.StopException;
 import org.tomitribe.telnet.impl.TtyCodes;
@@ -44,10 +42,10 @@ public class TomEECommands implements Command, Runnable, TtyCodes, SessionAware 
 
     private final ConsoleSession consoleSession;
     private final String domain;
-    private final ContextRunnable contextRunnable;
+    private final SecurityHandler contextRunnable;
     private ServerSession session;
 
-    public TomEECommands(ConsoleSession session, String domain, ContextRunnable contextRunnable) {
+    public TomEECommands(ConsoleSession session, String domain, SecurityHandler contextRunnable) {
         super();
         this.consoleSession = session;
         this.domain = domain;
@@ -88,25 +86,21 @@ public class TomEECommands implements Command, Runnable, TtyCodes, SessionAware 
 
     @Override
     public void run() {
-        try {
-            contextRunnable.run(new Runnable() {
+        contextRunnable.runWithSecurityContext(new Runnable() {
 
-                @Override
-                public void run() {
-                    try {
-                        consoleSession.doSession(in, out, true);
-                    } catch (StopException s) {
-                        // exit normally
-                    } catch (Throwable t) {
-                        t.printStackTrace();
-                    }
-
-                    cbk.onExit(0);
+            @Override
+            public void run() {
+                try {
+                    consoleSession.doSession(in, out, true);
+                } catch (StopException s) {
+                    // exit normally
+                } catch (Throwable t) {
+                    t.printStackTrace();
                 }
-            }, session.getUsername(), session.getAttribute(SshdServer.CREDENTIAL).getValue(), domain);
-        } catch (WorkException e) {
-            cbk.onExit(0);
-        }
+
+                cbk.onExit(0);
+            }
+        }, session.getUsername(), session.getAttribute(SshdServer.CREDENTIAL).getValue(), domain);
     }
 
     @Override

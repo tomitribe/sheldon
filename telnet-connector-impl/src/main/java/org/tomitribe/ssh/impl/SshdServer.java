@@ -26,7 +26,7 @@ import org.apache.sshd.server.keyprovider.PEMGeneratorHostKeyProvider;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.tomitribe.authenticator.DomainAuthenticator;
 import org.tomitribe.commands.factories.TomEEComandsFactory;
-import org.tomitribe.telnet.adapter.ContextRunnable;
+import org.tomitribe.telnet.adapter.SecurityHandler;
 import org.tomitribe.telnet.impl.ConsoleSession;
 
 public class SshdServer {
@@ -50,13 +50,13 @@ public class SshdServer {
     private final ConsoleSession session;
     private final int port;
     private final String domain;
-    private final ContextRunnable contextRunnable;
+    private final SecurityHandler contextRunnable;
 
-    public SshdServer(ConsoleSession session, int port, String domain, ContextRunnable contextRunnable) {
+    public SshdServer(ConsoleSession session, int port, String domain, SecurityHandler securityHandler) {
         this.session = session;
         this.port = port;
         this.domain = domain;
-        this.contextRunnable = contextRunnable;
+        this.contextRunnable = securityHandler;
     }
 
     public void start() {

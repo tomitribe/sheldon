@@ -16,13 +16,6 @@
  */
 package org.tomitribe.telnet.impl;
 
-import jline.UnsupportedTerminal;
-import jline.console.ConsoleReader;
-
-import org.tomitribe.authenticator.DomainAuthenticator;
-import org.tomitribe.telnet.adapter.ContextRunnable;
-import org.tomitribe.telnet.util.Utils;
-
 import java.io.Closeable;
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -33,22 +26,27 @@ import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
-import javax.resource.spi.work.WorkException;
+import jline.UnsupportedTerminal;
+import jline.console.ConsoleReader;
+
+import org.tomitribe.authenticator.DomainAuthenticator;
+import org.tomitribe.telnet.adapter.SecurityHandler;
+import org.tomitribe.telnet.util.Utils;
 
 public class TelnetServer implements TtyCodes {
 
     private final int port;
     private final String domain;
-    private final ContextRunnable contextRunner;
+    private final SecurityHandler contextRunner;
     private final ConsoleSession session;
     private final AtomicBoolean running = new AtomicBoolean();
     private ServerSocket serverSocket;
 
-    public TelnetServer(ConsoleSession session, int port, String domain, ContextRunnable contextRunner) {
+    public TelnetServer(ConsoleSession session, int port, String domain, SecurityHandler securityHandler) {
         this.session = session;
         this.port = port;
         this.domain = domain;
-        this.contextRunner = contextRunner;
+        this.contextRunner = securityHandler;
     }
 
     public void start() throws IOException {
@@ -125,42 +123,29 @@ public class TelnetServer implements TtyCodes {
             e1.printStackTrace();
         }
 
-        try {
-            contextRunner.run(new Runnable() {
+        contextRunner.runWithSecurityContext(new Runnable() {
 
-                @Override
-                public void run() {
-                    try {
-                        session.doSession(in, out, false);
-                    } catch (StopException s) {
-                        // exit normally
-                    } catch (Throwable t) {
-                        t.printStackTrace();
-                    } finally {
-                        close(in);
-                        close(out);
-                        if (socket != null) {
-                            try {
-                                socket.close();
-                            } catch (Exception e) {
-                                // ignore
-                            }
+            @Override
+            public void run() {
+                try {
+                    session.doSession(in, out, false);
+                } catch (StopException s) {
+                    // exit normally
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                } finally {
+                    close(in);
+                    close(out);
+                    if (socket != null) {
+                        try {
+                            socket.close();
+                        } catch (Exception e) {
+                            // ignore
                         }
                     }
                 }
-            }, username, password, domain);
-        } catch (WorkException e) {
-        } finally {
-            close(in);
-            close(out);
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (Exception e) {
-                    // ignore
-                }
             }
-        }
+        }, username, password, domain);
     }
 
     private static void close(Closeable closeable) {

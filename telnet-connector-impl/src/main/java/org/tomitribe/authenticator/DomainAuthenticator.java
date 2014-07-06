@@ -17,39 +17,28 @@
 
 package org.tomitribe.authenticator;
 
-import javax.resource.spi.work.WorkException;
-
 import org.apache.sshd.server.PasswordAuthenticator;
 import org.apache.sshd.server.session.ServerSession;
 import org.tomitribe.ssh.impl.SshdServer;
 import org.tomitribe.ssh.impl.SshdServer.Credential;
-import org.tomitribe.telnet.adapter.ContextRunnable;
-import org.tomitribe.telnet.adapter.NotAuthenticatedException;
+import org.tomitribe.telnet.adapter.SecurityHandler;
 
 public class DomainAuthenticator implements PasswordAuthenticator {
 
     private final String domain;
-    private final ContextRunnable contextRunnable;
+    private final SecurityHandler securityHandler;
 
-    public DomainAuthenticator(final String domain, final ContextRunnable contextRunnable) {
+    public DomainAuthenticator(final String domain, final SecurityHandler securityHandler) {
         this.domain = domain;
-        this.contextRunnable = contextRunnable;
+        this.securityHandler = securityHandler;
     }
 
     @Override
     public boolean authenticate(String username, String password, ServerSession session) {
-        try {
-            contextRunnable.run(new Runnable() {
-
-                @Override
-                public void run() {
-                    // don't actually need to do anything here, just make sure this work object can be run
-                    // with the credentials provided
-                }
-                
-            }, username, password, domain);
-        } catch (WorkException t) {
-            t.printStackTrace();
+        final boolean authenticated = securityHandler.authenticate(username, password, domain);
+        System.out.println("1 - Authenticated: " + authenticated);
+        
+        if (! authenticated) {
             return false;
         }
         
