@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,22 +33,14 @@ import javax.resource.spi.ResourceAdapter;
 import javax.resource.spi.ResourceAdapterInternalException;
 import javax.resource.spi.endpoint.MessageEndpoint;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
-import javax.resource.spi.work.SecurityContext;
 import javax.resource.spi.work.Work;
-import javax.resource.spi.work.WorkContext;
-import javax.resource.spi.work.WorkContextProvider;
 import javax.resource.spi.work.WorkException;
 import javax.resource.spi.work.WorkManager;
-import javax.security.auth.Subject;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.security.auth.message.callback.CallerPrincipalCallback;
-import javax.security.auth.message.callback.GroupPrincipalCallback;
-import javax.security.auth.message.callback.PasswordValidationCallback;
 import javax.transaction.xa.XAResource;
 import javax.validation.constraints.NotNull;
 
+import org.tomitribe.authenticator.AuthenticateWork;
+import org.tomitribe.authenticator.WorkSecurityContext;
 import org.tomitribe.crest.Cmd;
 import org.tomitribe.crest.Commands;
 import org.tomitribe.crest.Main;
@@ -60,7 +51,7 @@ import org.tomitribe.telnet.impl.ConsoleSession;
 import org.tomitribe.telnet.impl.TelnetServer;
 
 @Connector(description = "Telnet ResourceAdapter", displayName = "Telnet ResourceAdapter", eisType = "Telnet Adapter", version = "1.0")
-public class TelnetResourceAdapter implements ResourceAdapter, ContextRunnable {
+public class TelnetResourceAdapter implements ResourceAdapter, SecurityHandler {
 
     private TelnetServer telnetServer;
     private SshdServer sshdServer;
@@ -220,121 +211,19 @@ public class TelnetResourceAdapter implements ResourceAdapter, ContextRunnable {
     private WorkManager workManager;
 
     @Override
-    public void run(Runnable runnable, String username, String password, String domain) throws WorkException {
+    public void runWithSecurityContext(Runnable runnable, String username, String password, String domain) {
 
         // create a work with a security context
         RunnableWork runnableWork = new RunnableWork(runnable);
-        runnableWork.getWorkContexts().add(new MySecurityContext(username, password, domain));
+        runnableWork.getWorkContexts().add(new WorkSecurityContext(username, password, domain));
 
         // get the work manager to execute asynchronously
-        workManager.startWork(runnableWork);
-        
-    }
-
-    public static class RunnableWork implements Work, WorkContextProvider {
-
-        private final List<WorkContext> workContexts = new ArrayList<WorkContext>();
-        private final Runnable runnable;
-        private final ClassLoader classLoader;
-
-        public RunnableWork(Runnable runnable) {
-            this.runnable = runnable;
-            this.classLoader = Thread.currentThread().getContextClassLoader();
-        }
-
-        @Override
-        public void release() {
-
-        }
-
-        @Override
-        public void run() {
-            if (requiresAuthentication() && (! isAuthenticated())) {
-                throw new NotAuthenticatedException();
-            }
-            
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(classLoader);
-            runnable.run();
-            Thread.currentThread().setContextClassLoader(cl);
-        }
-
-        private boolean isAuthenticated() {
-            final MySecurityContext securityContext = getSecurityContext();
-            if (securityContext == null) {
-                return false;
-            }
-            
-            return securityContext.isAuthenticated();
-        }
-        
-        private boolean requiresAuthentication() {
-            return (getSecurityContext() != null);
-        }
-        
-        private MySecurityContext getSecurityContext() {
-            final Iterator<WorkContext> iterator = getWorkContexts().iterator();
-            while (iterator.hasNext()) {
-                WorkContext workContext = (WorkContext) iterator.next();
-                if (workContext instanceof MySecurityContext) {
-                    return (MySecurityContext) workContext;
-                }
-            }
-            
-            return null;
-        }
-
-        @Override
-        public List<WorkContext> getWorkContexts() {
-            return workContexts;
+        try {
+            workManager.startWork(runnableWork);
+        } catch (WorkException e) {
+            e.printStackTrace();
         }
     }
-
-    public static class MySecurityContext extends SecurityContext {
-
-        private final String username;
-        private final String password;
-        private final String domain;
-        private boolean authenticated = false;
-
-        public MySecurityContext(String username, String password, String domain) {
-            this.username = username;
-            this.password = password;
-            this.domain = domain;
-        }
-
-        @Override
-        public void setupSecurityContext(final CallbackHandler handler, final Subject executionSubject, final Subject serviceSubject) {
-            List<Callback> callbacks = new ArrayList<Callback>();
-
-            final GroupPrincipalCallback gpc = new GroupPrincipalCallback(executionSubject, null);
-            callbacks.add(gpc);
-
-            // add CallerPrincipalCallback so we can check if AppServer supports it
-            final CallerPrincipalCallback cpc = new CallerPrincipalCallback(executionSubject, username);
-            callbacks.add(cpc);
-
-            final PasswordValidationCallback pvc = new PasswordValidationCallback(executionSubject, username, password.toCharArray());
-            callbacks.add(pvc);
-
-            Callback callbackArray[] = new Callback[callbacks.size()];
-            try {
-                handler.handle(callbacks.toArray(callbackArray));
-
-            } catch (UnsupportedCallbackException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            
-            this.authenticated = pvc.getResult();
-        }
-
-        public boolean isAuthenticated() {
-            return authenticated;
-        }
-    }
-
 
     private static class EndpointTarget implements Target {
         private final MessageEndpoint messageEndpoint;
@@ -406,6 +295,26 @@ public class TelnetResourceAdapter implements ResourceAdapter, ContextRunnable {
         } else if (!telnetPort.equals(other.telnetPort))
             return false;
         return true;
+    }
+
+    @Override
+    public boolean authenticate(String username, String password, String domain) {
+        boolean authenticated = false;
+        
+        final AuthenticateWork authenticateWork = new AuthenticateWork(username, password, domain);
+        try {
+            workManager.doWork(authenticateWork);
+            System.out.println("Work finished - result:" + authenticateWork.isAuthenticated());
+            authenticated = authenticateWork.isAuthenticated();
+        } catch (WorkException e) {
+            authenticated = false;
+        }
+
+        if (! authenticated) {
+            return false;
+        }
+        
+        return authenticated;
     }
     
     
