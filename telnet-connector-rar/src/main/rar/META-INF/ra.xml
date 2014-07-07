@@ -15,7 +15,10 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<connector xmlns="http://java.sun.com/xml/ns/javaee">
+<connector xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/connector_1_7.xsd"
+      version="1.7">
 	<description>Telnet ResourceAdapter</description>
 	<display-name>Telnet ResourceAdapter</display-name>
 	<eis-type>Telnet Adapter</eis-type>
