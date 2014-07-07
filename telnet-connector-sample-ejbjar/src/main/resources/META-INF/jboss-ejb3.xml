@@ -23,19 +23,23 @@
     <jee:assembly-descriptor>
         <mdb:resource-adapter-binding>
         	<jee:ejb-name>Fun</jee:ejb-name> 
-            <mdb:resource-adapter-name>telnet-connector-sample-ear-1.0.0-SNAPSHOT.ear#telnet-connector-impl-1.0.0-SNAPSHOT.rar</mdb:resource-adapter-name>  
+            <mdb:resource-adapter-name>telnet-connector-sample-ear-1.0.0-SNAPSHOT.ear#telnet-connector-rar-1.0.0-SNAPSHOT.rar</mdb:resource-adapter-name>  
         </mdb:resource-adapter-binding>  
         <mdb:resource-adapter-binding>
         	<jee:ejb-name>Runtime</jee:ejb-name> 
-            <mdb:resource-adapter-name>telnet-connector-sample-ear-1.0.0-SNAPSHOT.ear#telnet-connector-impl-1.0.0-SNAPSHOT.rar</mdb:resource-adapter-name>  
+            <mdb:resource-adapter-name>telnet-connector-sample-ear-1.0.0-SNAPSHOT.ear#telnet-connector-rar-1.0.0-SNAPSHOT.rar</mdb:resource-adapter-name>  
         </mdb:resource-adapter-binding>  
         <mdb:resource-adapter-binding>
         	<jee:ejb-name>System</jee:ejb-name> 
-            <mdb:resource-adapter-name>telnet-connector-sample-ear-1.0.0-SNAPSHOT.ear#telnet-connector-impl-1.0.0-SNAPSHOT.rar</mdb:resource-adapter-name>  
+            <mdb:resource-adapter-name>telnet-connector-sample-ear-1.0.0-SNAPSHOT.ear#telnet-connector-rar-1.0.0-SNAPSHOT.rar</mdb:resource-adapter-name>  
         </mdb:resource-adapter-binding>  
         <mdb:resource-adapter-binding>
         	<jee:ejb-name>SystemProperties</jee:ejb-name> 
-            <mdb:resource-adapter-name>telnet-connector-sample-ear-1.0.0-SNAPSHOT.ear#telnet-connector-impl-1.0.0-SNAPSHOT.rar</mdb:resource-adapter-name>  
+            <mdb:resource-adapter-name>telnet-connector-sample-ear-1.0.0-SNAPSHOT.ear#telnet-connector-rar-1.0.0-SNAPSHOT.rar</mdb:resource-adapter-name>  
+        </mdb:resource-adapter-binding>  
+        <mdb:resource-adapter-binding>
+        	<jee:ejb-name>User</jee:ejb-name> 
+            <mdb:resource-adapter-name>telnet-connector-sample-ear-1.0.0-SNAPSHOT.ear#telnet-connector-rar-1.0.0-SNAPSHOT.rar</mdb:resource-adapter-name>  
         </mdb:resource-adapter-binding>  
     </jee:assembly-descriptor>  
 </jboss> 
