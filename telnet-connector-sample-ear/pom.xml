@@ -43,7 +43,7 @@
     </dependency>
     <dependency>
       <groupId>org.tomitribe</groupId>
-      <artifactId>telnet-connector-impl</artifactId>
+      <artifactId>telnet-connector-rar</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <type>rar</type>
     </dependency>
@@ -67,7 +67,7 @@
           <modules>
             <rarModule>
               <groupId>org.tomitribe</groupId>
-              <artifactId>telnet-connector-impl</artifactId>
+              <artifactId>telnet-connector-rar</artifactId>
             </rarModule>
             <ejbModule>
               <groupId>org.tomitribe</groupId>
