@@ -76,19 +76,19 @@ public class TelnetResourceAdapter implements ResourceAdapter, SecurityHandler {
     private Main main;
     private ConsoleSession session;
 
-    public Integer getSshPort() {
+    public int getSshPort() {
         return sshPort;
     }
 
-    public void setSshPort(Integer sshPort) {
+    public void setSshPort(int sshPort) {
         this.sshPort = sshPort;
     }
 
-    public Integer getTelnetPort() {
+    public int getTelnetPort() {
         return telnetPort;
     }
 
-    public void setTelnetPort(Integer telnetPort) {
+    public void setTelnetPort(int telnetPort) {
         this.telnetPort = telnetPort;
     }
 
