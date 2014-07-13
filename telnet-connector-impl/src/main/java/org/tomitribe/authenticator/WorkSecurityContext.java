@@ -25,33 +25,22 @@ import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.security.auth.message.callback.CallerPrincipalCallback;
-import javax.security.auth.message.callback.GroupPrincipalCallback;
 import javax.security.auth.message.callback.PasswordValidationCallback;
 
 public class WorkSecurityContext extends SecurityContext {
 
     private final String username;
     private final String password;
-    private final String domain;
     private boolean authenticated = false;
 
-    public WorkSecurityContext(String username, String password, String domain) {
+    public WorkSecurityContext(String username, String password) {
         this.username = username;
         this.password = password;
-        this.domain = domain;
     }
 
     @Override
     public void setupSecurityContext(final CallbackHandler handler, final Subject executionSubject, final Subject serviceSubject) {
         List<Callback> callbacks = new ArrayList<Callback>();
-
-        final GroupPrincipalCallback gpc = new GroupPrincipalCallback(executionSubject, null);
-        callbacks.add(gpc);
-
-        // add CallerPrincipalCallback so we can check if AppServer supports it
-        final CallerPrincipalCallback cpc = new CallerPrincipalCallback(executionSubject, username);
-        callbacks.add(cpc);
 
         final PasswordValidationCallback pvc = new PasswordValidationCallback(executionSubject, username, password.toCharArray());
         callbacks.add(pvc);

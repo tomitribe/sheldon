@@ -25,23 +25,20 @@ import org.tomitribe.telnet.adapter.SecurityHandler;
 
 public class DomainAuthenticator implements PasswordAuthenticator {
 
-    private final String domain;
     private final SecurityHandler securityHandler;
 
-    public DomainAuthenticator(final String domain, final SecurityHandler securityHandler) {
-        this.domain = domain;
+    public DomainAuthenticator(final SecurityHandler securityHandler) {
         this.securityHandler = securityHandler;
     }
 
     @Override
     public boolean authenticate(String username, String password, ServerSession session) {
-        final boolean authenticated = securityHandler.authenticate(username, password, domain);
-        System.out.println("1 - Authenticated: " + authenticated);
-        
+        final boolean authenticated = securityHandler.authenticate(username, password);
+
         if (! authenticated) {
             return false;
         }
-        
+
         if (session != null) {
             session.setAttribute(SshdServer.CREDENTIAL, new Credential(password));
         }

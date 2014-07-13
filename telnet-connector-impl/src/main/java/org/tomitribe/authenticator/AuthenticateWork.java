@@ -28,9 +28,9 @@ public class AuthenticateWork implements Work, WorkContextProvider {
     private boolean authenticated = false;
     private final WorkSecurityContext securityContext;
 
-    public AuthenticateWork(final String username, final String password, final String domain) {
+    public AuthenticateWork(final String username, final String password) {
         super();
-        this.securityContext = new WorkSecurityContext(username, password, domain);
+        this.securityContext = new WorkSecurityContext(username, password);
     }
 
     @Override

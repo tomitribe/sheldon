@@ -49,14 +49,12 @@ public class SshdServer {
     private SshServer sshServer;
     private final ConsoleSession session;
     private final int port;
-    private final String domain;
-    private final SecurityHandler contextRunnable;
+    private final SecurityHandler securityHandler;
 
-    public SshdServer(ConsoleSession session, int port, String domain, SecurityHandler securityHandler) {
+    public SshdServer(ConsoleSession session, int port, SecurityHandler securityHandler) {
         this.session = session;
         this.port = port;
-        this.domain = domain;
-        this.contextRunnable = securityHandler;
+        this.securityHandler = securityHandler;
     }
 
     public void start() {
@@ -73,8 +71,8 @@ public class SshdServer {
                     .getPath()));
         }
 
-        sshServer.setShellFactory(new TomEEComandsFactory(session, domain, contextRunnable));
-        sshServer.setPasswordAuthenticator(new DomainAuthenticator(domain, contextRunnable));
+        sshServer.setShellFactory(new TomEEComandsFactory(session, securityHandler));
+        sshServer.setPasswordAuthenticator(new DomainAuthenticator(securityHandler));
 
         try {
             sshServer.start();

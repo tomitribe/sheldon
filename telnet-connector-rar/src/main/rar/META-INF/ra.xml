@@ -30,28 +30,19 @@
 		<resourceadapter-class>org.tomitribe.telnet.adapter.TelnetResourceAdapter</resourceadapter-class>
 		<config-property>
 			<config-property-name>sshPort</config-property-name>
-			<config-property-type>int</config-property-type>
+			<config-property-type>java.lang.Integer</config-property-type>
 			<config-property-value>2222</config-property-value>
 		</config-property>
 		<config-property>
 			<config-property-name>telnetPort</config-property-name>
-			<config-property-type>int</config-property-type>
+			<config-property-type>java.lang.Integer</config-property-type>
 			<config-property-value>2020</config-property-value>
-		</config-property>
-		<config-property>
-			<config-property-name>domain</config-property-name>
-			<config-property-type>java.lang.String</config-property-type>
-			<config-property-value>UserDatabase</config-property-value>
 		</config-property>
 		<config-property>
 			<config-property-name>prompt</config-property-name>
 			<config-property-type>java.lang.String</config-property-type>
 			<config-property-value>prompt&gt;</config-property-value>
 		</config-property>
-		<outbound-resourceadapter>
-			<transaction-support>NoTransaction</transaction-support>
-			<reauthentication-support>false</reauthentication-support>
-		</outbound-resourceadapter>
 		<inbound-resourceadapter>
 			<messageadapter>
 				<messagelistener>
