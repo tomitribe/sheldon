@@ -63,10 +63,6 @@ public class TelnetResourceAdapter implements ResourceAdapter, SecurityHandler {
     @NotNull
     private String prompt;
 
-    @ConfigProperty(defaultValue = "UserDatabase")
-    @NotNull
-    private String domain;
-
     @ConfigProperty(defaultValue = "2222")
     private Integer sshPort;
 
@@ -76,19 +72,19 @@ public class TelnetResourceAdapter implements ResourceAdapter, SecurityHandler {
     private Main main;
     private ConsoleSession session;
 
-    public int getSshPort() {
+    public Integer getSshPort() {
         return sshPort;
     }
 
-    public void setSshPort(int sshPort) {
+    public void setSshPort(Integer sshPort) {
         this.sshPort = sshPort;
     }
 
-    public int getTelnetPort() {
+    public Integer getTelnetPort() {
         return telnetPort;
     }
 
-    public void setTelnetPort(int telnetPort) {
+    public void setTelnetPort(Integer telnetPort) {
         this.telnetPort = telnetPort;
     }
 
@@ -98,14 +94,6 @@ public class TelnetResourceAdapter implements ResourceAdapter, SecurityHandler {
 
     public void setPrompt(String prompt) {
         this.prompt = prompt;
-    }
-
-    public String getDomain() {
-        return domain;
-    }
-
-    public void setDomain(String domain) {
-        this.domain = domain;
     }
 
     public void start(BootstrapContext bootstrapContext) throws ResourceAdapterInternalException {
@@ -122,12 +110,12 @@ public class TelnetResourceAdapter implements ResourceAdapter, SecurityHandler {
         session = new ConsoleSession(main, prompt);
 
         if (sshPort != null) {
-            sshdServer = new SshdServer(session, sshPort, domain, this);
+            sshdServer = new SshdServer(session, sshPort, this);
             sshdServer.start();
         }
 
         if (telnetPort != null) {
-            telnetServer = new TelnetServer(session, telnetPort, domain, this);
+            telnetServer = new TelnetServer(session, telnetPort, this);
             try {
                 telnetServer.start();
             } catch (IOException e) {
@@ -211,11 +199,11 @@ public class TelnetResourceAdapter implements ResourceAdapter, SecurityHandler {
     private WorkManager workManager;
 
     @Override
-    public void runWithSecurityContext(Runnable runnable, String username, String password, String domain) {
+    public void runWithSecurityContext(Runnable runnable, String username, String password) {
 
         // create a work with a security context
         RunnableWork runnableWork = new RunnableWork(runnable);
-        runnableWork.getWorkContexts().add(new WorkSecurityContext(username, password, domain));
+        runnableWork.getWorkContexts().add(new WorkSecurityContext(username, password));
 
         // get the work manager to execute asynchronously
         try {
@@ -258,7 +246,6 @@ public class TelnetResourceAdapter implements ResourceAdapter, SecurityHandler {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((domain == null) ? 0 : domain.hashCode());
         result = prime * result + ((prompt == null) ? 0 : prompt.hashCode());
         result = prime * result + ((sshPort == null) ? 0 : sshPort.hashCode());
         result = prime * result + ((telnetPort == null) ? 0 : telnetPort.hashCode());
@@ -274,11 +261,6 @@ public class TelnetResourceAdapter implements ResourceAdapter, SecurityHandler {
         if (getClass() != obj.getClass())
             return false;
         TelnetResourceAdapter other = (TelnetResourceAdapter) obj;
-        if (domain == null) {
-            if (other.domain != null)
-                return false;
-        } else if (!domain.equals(other.domain))
-            return false;
         if (prompt == null) {
             if (other.prompt != null)
                 return false;
@@ -298,22 +280,17 @@ public class TelnetResourceAdapter implements ResourceAdapter, SecurityHandler {
     }
 
     @Override
-    public boolean authenticate(String username, String password, String domain) {
+    public boolean authenticate(String username, String password) {
         boolean authenticated = false;
         
-        final AuthenticateWork authenticateWork = new AuthenticateWork(username, password, domain);
+        final AuthenticateWork authenticateWork = new AuthenticateWork(username, password);
         try {
             workManager.doWork(authenticateWork);
-            System.out.println("Work finished - result:" + authenticateWork.isAuthenticated());
             authenticated = authenticateWork.isAuthenticated();
         } catch (WorkException e) {
             authenticated = false;
         }
 
-        if (! authenticated) {
-            return false;
-        }
-        
         return authenticated;
     }
     

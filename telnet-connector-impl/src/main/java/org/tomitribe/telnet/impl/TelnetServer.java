@@ -36,16 +36,14 @@ import org.tomitribe.telnet.util.Utils;
 public class TelnetServer implements TtyCodes {
 
     private final int port;
-    private final String domain;
     private final SecurityHandler contextRunner;
     private final ConsoleSession session;
     private final AtomicBoolean running = new AtomicBoolean();
     private ServerSocket serverSocket;
 
-    public TelnetServer(ConsoleSession session, int port, String domain, SecurityHandler securityHandler) {
+    public TelnetServer(ConsoleSession session, int port, SecurityHandler securityHandler) {
         this.session = session;
         this.port = port;
-        this.domain = domain;
         this.contextRunner = securityHandler;
     }
 
@@ -102,7 +100,7 @@ public class TelnetServer implements TtyCodes {
         final String username = consoleReader.readLine("login:");
         final String password = consoleReader.readLine("password:", new Character((char) 0));
         try {
-            if (!new DomainAuthenticator(domain, contextRunner).authenticate(username, password, null)) {
+            if (!new DomainAuthenticator(contextRunner).authenticate(username, password, null)) {
                 consoleReader.println("login failed ");
                 consoleReader.flush();
 
@@ -145,7 +143,7 @@ public class TelnetServer implements TtyCodes {
                     }
                 }
             }
-        }, username, password, domain);
+        }, username, password);
     }
 
     private static void close(Closeable closeable) {

@@ -26,17 +26,15 @@ import org.tomitribe.telnet.impl.ConsoleSession;
 public class TomEEComandsFactory implements Factory<Command> {
 
     private final ConsoleSession session;
-    private final String domain;
     private final SecurityHandler contextRunnable;
 
-    public TomEEComandsFactory(ConsoleSession session, String domain, SecurityHandler contextRunnable) {
+    public TomEEComandsFactory(ConsoleSession session, SecurityHandler contextRunnable) {
         this.session = session;
-        this.domain = domain;
         this.contextRunnable = contextRunnable;
     }
 
     @Override
     public Command create() {
-        return new TomEECommands(session, domain, contextRunnable);
+        return new TomEECommands(session, contextRunnable);
     }
 }

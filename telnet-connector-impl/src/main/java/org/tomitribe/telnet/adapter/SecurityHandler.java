@@ -19,7 +19,7 @@ package org.tomitribe.telnet.adapter;
 
 public interface SecurityHandler {
 
-    boolean authenticate(String username, String password, String domain);
-    void runWithSecurityContext(Runnable runnable, String username, String password, String domain);
+    boolean authenticate(String username, String password);
+    void runWithSecurityContext(Runnable runnable, String username, String password);
 
 }

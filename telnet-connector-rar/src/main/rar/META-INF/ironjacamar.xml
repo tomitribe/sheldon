@@ -18,7 +18,7 @@
 <ironjacamar xsi:schemaLocation="http://www.ironjacamar.org/doc/schema ironjacamar_1_1.xsd" xmlns="http://www.ironjacamar.org/doc/schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <workmanager>
     <security>
-      <domain>ManagementRealm</domain>
+      <domain>other</domain>
     </security>
   </workmanager>
 </ironjacamar>

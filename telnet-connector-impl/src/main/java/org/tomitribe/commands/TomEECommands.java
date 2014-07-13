@@ -41,14 +41,12 @@ public class TomEECommands implements Command, Runnable, TtyCodes, SessionAware 
     private Thread thread;
 
     private final ConsoleSession consoleSession;
-    private final String domain;
     private final SecurityHandler contextRunnable;
     private ServerSession session;
 
-    public TomEECommands(ConsoleSession session, String domain, SecurityHandler contextRunnable) {
+    public TomEECommands(ConsoleSession session, SecurityHandler contextRunnable) {
         super();
         this.consoleSession = session;
-        this.domain = domain;
         this.contextRunnable = contextRunnable;
     }
 
@@ -100,7 +98,7 @@ public class TomEECommands implements Command, Runnable, TtyCodes, SessionAware 
 
                 cbk.onExit(0);
             }
-        }, session.getUsername(), session.getAttribute(SshdServer.CREDENTIAL).getValue(), domain);
+        }, session.getUsername(), session.getAttribute(SshdServer.CREDENTIAL).getValue());
     }
 
     @Override
