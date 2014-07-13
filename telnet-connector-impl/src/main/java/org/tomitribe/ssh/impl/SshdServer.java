@@ -24,7 +24,7 @@ import org.apache.sshd.common.Session;
 import org.apache.sshd.common.util.SecurityUtils;
 import org.apache.sshd.server.keyprovider.PEMGeneratorHostKeyProvider;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
-import org.tomitribe.authenticator.DomainAuthenticator;
+import org.tomitribe.authenticator.PasswordAuthenticatorImpl;
 import org.tomitribe.commands.factories.TomEEComandsFactory;
 import org.tomitribe.telnet.adapter.SecurityHandler;
 import org.tomitribe.telnet.impl.ConsoleSession;
@@ -72,7 +72,7 @@ public class SshdServer {
         }
 
         sshServer.setShellFactory(new TomEEComandsFactory(session, securityHandler));
-        sshServer.setPasswordAuthenticator(new DomainAuthenticator(securityHandler));
+        sshServer.setPasswordAuthenticator(new PasswordAuthenticatorImpl(securityHandler));
 
         try {
             sshServer.start();
