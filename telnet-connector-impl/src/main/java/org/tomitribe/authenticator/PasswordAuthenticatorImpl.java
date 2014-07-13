@@ -23,11 +23,11 @@ import org.tomitribe.ssh.impl.SshdServer;
 import org.tomitribe.ssh.impl.SshdServer.Credential;
 import org.tomitribe.telnet.adapter.SecurityHandler;
 
-public class DomainAuthenticator implements PasswordAuthenticator {
+public class PasswordAuthenticatorImpl implements PasswordAuthenticator {
 
     private final SecurityHandler securityHandler;
 
-    public DomainAuthenticator(final SecurityHandler securityHandler) {
+    public PasswordAuthenticatorImpl(final SecurityHandler securityHandler) {
         this.securityHandler = securityHandler;
     }
 

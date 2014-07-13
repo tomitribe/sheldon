@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 import jline.UnsupportedTerminal;
 import jline.console.ConsoleReader;
 
-import org.tomitribe.authenticator.DomainAuthenticator;
+import org.tomitribe.authenticator.PasswordAuthenticatorImpl;
 import org.tomitribe.telnet.adapter.SecurityHandler;
 import org.tomitribe.telnet.util.Utils;
 
@@ -100,7 +100,7 @@ public class TelnetServer implements TtyCodes {
         final String username = consoleReader.readLine("login:");
         final String password = consoleReader.readLine("password:", new Character((char) 0));
         try {
-            if (!new DomainAuthenticator(contextRunner).authenticate(username, password, null)) {
+            if (!new PasswordAuthenticatorImpl(contextRunner).authenticate(username, password, null)) {
                 consoleReader.println("login failed ");
                 consoleReader.flush();
 
