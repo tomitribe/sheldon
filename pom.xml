@@ -38,13 +38,6 @@
 
   <repositories>
     <repository>
-      <id>snapshots</id>
-      <url>http://repository.tomitribe.com/content/repositories/snapshots</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
       <id>apache-snapshots</id>
       <url>https://repository.apache.org/content/groups/snapshots/</url>
       <snapshots>
@@ -58,12 +51,12 @@
       <dependency>
         <groupId>org.tomitribe</groupId>
         <artifactId>tomitribe-crest</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.0.1</version>
       </dependency>
       <dependency>
         <groupId>org.tomitribe</groupId>
         <artifactId>tomitribe-util</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.sshd</groupId>
