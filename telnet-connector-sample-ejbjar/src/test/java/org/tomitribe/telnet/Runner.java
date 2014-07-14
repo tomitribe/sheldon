@@ -51,7 +51,6 @@ public class Runner {
         
         final JavaArchive rarLib = ShrinkWrap.create(JavaArchive.class, "lib.jar");
         rarLib.addPackages(false, "org.tomitribe.ssh.impl", "org.tomitribe.telnet.adapter", "org.tomitribe.telnet.impl", "org.tomitribe.telnet.util", "org.tomitribe.commands.factories", "org.tomitribe.authenticator", "org.tomitribe.commands");
-//        rarLib.setManifest(new StringAsset("Class-Path: api.jar"));
         
         System.out.println(rarLib.toString(true));
         System.out.println();
