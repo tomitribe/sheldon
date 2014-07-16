@@ -43,7 +43,7 @@ public class ConsoleSession implements TtyCodes {
         this.prompt = prompt;
     }
 
-    public void doSession(InputStream in, OutputStream out, boolean ssh) throws IOException {
+    public void doSession(final InputStream in, OutputStream out, boolean ssh) throws IOException {
         FilterOutputStream fo = new FilterOutputStream(out) {
             @Override
             public void write(final int i) throws IOException {
@@ -58,6 +58,7 @@ public class ConsoleSession implements TtyCodes {
 
         Terminal term = ssh ? null : new UnsupportedTerminal();
         ConsoleReader reader = new ConsoleReader(in, fo, term);
+        reader.addCompleter(new CommandCompleter(main));
 
         reader.setPrompt(prompt);
         PrintWriter writer = new PrintWriter(reader.getOutput());
