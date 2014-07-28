@@ -51,7 +51,8 @@ public class CommandCompleter implements Completer {
             t.printStackTrace();
         }
         
-        return 0;        
+        final int pos = buffer.lastIndexOf(" ", cursor) + 1;
+        return pos;        
     }
 
 }
