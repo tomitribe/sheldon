@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Properties;
 
-import org.tomitribe.crest.Environment;
+import org.tomitribe.crest.environments.Environment;
 
 class ConsoleEnvironment implements Environment {
     private final PrintStream out;
