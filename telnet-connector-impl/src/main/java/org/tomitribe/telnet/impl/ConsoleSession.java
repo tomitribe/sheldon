@@ -27,9 +27,9 @@ import jline.Terminal;
 import jline.UnsupportedTerminal;
 import jline.console.ConsoleReader;
 
-import org.tomitribe.crest.CommandFailedException;
-import org.tomitribe.crest.Environment;
 import org.tomitribe.crest.Main;
+import org.tomitribe.crest.cmds.CommandFailedException;
+import org.tomitribe.crest.environments.Environment;
 import org.tomitribe.telnet.util.Utils;
 
 public class ConsoleSession implements TtyCodes {

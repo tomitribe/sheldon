@@ -16,7 +16,7 @@
  */
 package org.tomitribe.telnet.adapter;
 
-import org.tomitribe.crest.Cmd;
+import org.tomitribe.crest.cmds.Cmd;
 import org.tomitribe.telnet.api.TelnetListener;
 
 import javax.resource.ResourceException;
@@ -24,6 +24,7 @@ import javax.resource.spi.Activation;
 import javax.resource.spi.ActivationSpec;
 import javax.resource.spi.InvalidPropertyException;
 import javax.resource.spi.ResourceAdapter;
+
 import java.util.ArrayList;
 import java.util.List;
 

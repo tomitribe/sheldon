@@ -41,10 +41,10 @@ import javax.validation.constraints.NotNull;
 
 import org.tomitribe.authenticator.AuthenticateWork;
 import org.tomitribe.authenticator.WorkSecurityContext;
-import org.tomitribe.crest.Cmd;
-import org.tomitribe.crest.Commands;
 import org.tomitribe.crest.Main;
-import org.tomitribe.crest.Target;
+import org.tomitribe.crest.cmds.Cmd;
+import org.tomitribe.crest.cmds.processors.Commands;
+import org.tomitribe.crest.cmds.targets.Target;
 import org.tomitribe.ssh.impl.SshdServer;
 import org.tomitribe.telnet.impl.BuildIn;
 import org.tomitribe.telnet.impl.ConsoleSession;
