@@ -1,7 +1,160 @@
-telnet-connector
+Telnet Connector
 ================
+
+Overview
+--------
+
+The Telnet connector provides an interactive shell environment that can be accessed via SSH or Telnet.
+The commands available in the shell are provided by implementing message driven beans (MDBs) using Crest -
+a command line API styled after JAX-RS.
+
+As an implementation of a JCA 1.7 inflow connector, this project aims for portability and has been tested
+using Apache TomEE 1.7.0 and Glassfish 4.
+
+Features
+--------
+
+* SSH and Telnet support
+* Provide custom commands via message driven beans using Crest
+* Help command shows all commands available along with syntax
+* Authentication using any realms available in the server
+* Authorization with standard EJB annotations such as @RolesAllowed
+* Tab completion
+* Command history
 
 Demo
 ----
 
 image:https://raw.githubusercontent.com/tomitribe/telnet-connector/master/terminal.gif[Demo]
+
+
+Creating commands
+-----------------
+
+Defining new commands for the connector is straightforward. Define a new MDB with the @MessageDriven annotation.
+The MDB needs to implement the org.tomitribe.telnet.api.TelnetListener interface. This is simply a marker interface
+with no methods. Each command can then be provided as a public method with a @Command annotation, with any desired
+arguments, and any options annotated with @Option. Further Crest documentation is available here: .
+
+Here's a simple example that provides a "freeMemory" command. This returns the free memory in the JVM - in MB by
+default.
+
+--------------------------------------------------------------------------------
+@MessageDriven(name = "Runtime")
+public class RuntimeBean implements TelnetListener {
+
+    @Command
+    public String freeMemory(@Option("unit") @Default("MEGABYTES") SizeUnit unit) {
+        final long bytes = Runtime.getRuntime().freeMemory();
+        final Size size = new Size(unit.convert(bytes, SizeUnit.BYTES), unit);
+        return size.toString();
+    }
+
+}
+--------------------------------------------------------------------------------
+
+Deploying
+---------
+
+As part of an EAR file
+~~~~~~~~~~~~~~~~~~~~~~
+
+To include the connector in an EAR file, include the telnet-connector RAR as a module in the EAR
+along with your MDBs packaged up in an EJB jar.
+
+Reference the RAR in META-INF/application.xml:
+
+--------------------------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_6.xsd" version="6">
+  <description>Sonatype helps open source projects to set up Maven repositories on https://oss.sonatype.org/</description>
+  <display-name>telnet-connector-sample-ear</display-name>
+  <initialize-in-order>true</initialize-in-order>
+  <module>
+    <connector>telnet-connector-rar-1.0.0-SNAPSHOT.rar</connector>
+  </module>
+  <module>
+    <ejb>telnet-connector-sample-ejb-1.0.0-SNAPSHOT.jar</ejb>
+  </module>
+  <library-directory>lib</library-directory>
+</application>
+--------------------------------------------------------------------------------
+
+The target structure for the EAR should look like this:
+
+--------------------------------------------------------------------------------
+test.ear:
+|---- lib
+      |---- xbean-finder-shaded-3.16.jar
+      |---- xbean-asm4-shaded-3.16.jar
+      |---- tomitribe-util-1.0.0.jar
+      |---- commons-lang3-3.1.jar
+      |---- tomitribe-crest-17920409709550746.jar
+      |---- bval-jsr303-0.5.jar
+      |---- telnet-connector-api-1.0.0-SNAPSHOT.jar
+      |---- geronimo-validation_1.0_spec-1.1.jar
+      |---- bval-core-0.5.jar
+      |---- xbean-asm-shaded-3.16.jar
+      |---- commons-beanutils-core-1.8.3.jar
+|---- telnet-connector-rar-1.0.0-SNAPSHOT.rar
+|---- <ejb-jar-with-mdb-commands>.jar
+|---- META-INF
+      |---- application.xml
+
+--------------------------------------------------------------------------------
+
+If you use Maven, you can achieve the above structure using the following in your POM:
+
+--------------------------------------------------------------------------------
+<dependencies>
+    <dependency>
+      <groupId>org.tomitribe</groupId>
+      <artifactId>telnet-connector-sample-ejb</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <type>ejb</type>
+    </dependency>
+    <dependency>
+      <groupId>org.tomitribe</groupId>
+      <artifactId>telnet-connector-rar</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <type>rar</type>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-ear-plugin</artifactId>
+        <version>2.9</version>
+        <configuration>
+          <initializeInOrder>true</initializeInOrder>
+          <version>6</version>
+          <defaultLibBundleDir>lib</defaultLibBundleDir>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+          </archive>
+          <modules>
+            <rarModule>
+              <groupId>org.tomitribe</groupId>
+              <artifactId>telnet-connector-rar</artifactId>
+            </rarModule>
+            <ejbModule>
+              <groupId>org.tomitribe</groupId>
+              <artifactId>telnet-connector-sample-ejb</artifactId>
+            </ejbModule>
+          </modules>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+--------------------------------------------------------------------------------
+
+Standalone - Apache TomEE
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Standalone - Glassfish
+~~~~~~~~~~~~~~~~~~~~~~
