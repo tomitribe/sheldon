@@ -40,8 +40,8 @@ public class Runner {
     @Deployment(testable = false)
     public static EnterpriseArchive createDeployment() {
 
-        File[] deps = Maven.resolver().resolve("org.tomitribe:tomitribe-crest:1.0.0-SNAPSHOT", "org.tomitribe:tomitribe-util:1.0.0").withTransitivity().asFile();
-        File[] rarDeps = Maven.resolver().resolve("org.apache.sshd:sshd-core:0.9.0", "jline:jline:2.11").withTransitivity().asFile();
+        File[] deps = Maven.resolver().resolve("org.tomitribe:tomitribe-util:1.0.0").withTransitivity().asFile();
+        File[] rarDeps = Maven.resolver().resolve("org.apache.sshd:sshd-core:0.9.0", "jline:jline:2.11", "org.tomitribe:tomitribe-crest:1.0.0-SNAPSHOT", "org.tomitribe:tomitribe-util:1.0.0").withTransitivity().asFile();
         
         final JavaArchive apiJar = ShrinkWrap.create(JavaArchive.class, "api.jar");
         apiJar.addPackages(true, "org.tomitribe.telnet.api");

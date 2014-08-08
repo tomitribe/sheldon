@@ -49,6 +49,7 @@
       <dependency>
         <groupId>org.tomitribe</groupId>
         <artifactId>tomitribe-crest</artifactId>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.tomitribe</groupId>
