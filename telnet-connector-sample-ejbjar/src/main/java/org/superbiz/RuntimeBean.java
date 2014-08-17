@@ -39,21 +39,21 @@ public class RuntimeBean implements TelnetListener {
     }
 
     @Command
-    public String freeMemory(@Option("unit") @Default("MEGABYTES") SizeUnit unit) {
+    public String freeMemory(@Option({"unit", "u"}) @Default("MEGABYTES") SizeUnit unit) {
         final long bytes = Runtime.getRuntime().freeMemory();
         final Size size = new Size(unit.convert(bytes, SizeUnit.BYTES), unit);
         return size.toString();
     }
 
     @Command
-    public String maxMemory(@Option("unit") @Default("MEGABYTES") SizeUnit unit) {
+    public String maxMemory(@Option({"unit","u"}) @Default("MEGABYTES") SizeUnit unit) {
         final long bytes = Runtime.getRuntime().maxMemory();
         final Size size = new Size(unit.convert(bytes, SizeUnit.BYTES), unit);
         return size.toString();
     }
 
     @Command
-    public String totalMemory(@Option("unit") @Default("MEGABYTES") SizeUnit unit) {
+    public String totalMemory(@Option({"unit","u"}) @Default("MEGABYTES") SizeUnit unit) {
         final long bytes = Runtime.getRuntime().totalMemory();
         final Size size = new Size(unit.convert(bytes, SizeUnit.BYTES), unit);
         return size.toString();

@@ -37,7 +37,7 @@ public class FunBean implements TelnetListener {
     }
 
     @Command("set")
-    public String doSet(@Option("key") String key, @Option("value") String value) {
+    public String doSet(@Option({"key", "k"}) String key, @Option({"value", "v"}) String value) {
 
         final Object old = properties.setProperty(key, value);
         final StringBuilder sb = new StringBuilder();
@@ -51,7 +51,7 @@ public class FunBean implements TelnetListener {
     }
 
     @Command("list")
-    public String doList(@Option("pattern") Pattern pattern) {
+    public String doList(@Option({"pattern", "p"}) Pattern pattern) {
 
         if (pattern == null) pattern = Pattern.compile(".*");
         final StringBuilder sb = new StringBuilder();
