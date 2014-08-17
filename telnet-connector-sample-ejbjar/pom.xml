@@ -75,7 +75,7 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <tomee.version>1.7.0-SNAPSHOT</tomee.version>
+        <tomee.version>1.7.0</tomee.version>
         <tomee.classifier>plus</tomee.classifier>
       </properties>
       <build>
