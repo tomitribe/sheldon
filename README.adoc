@@ -85,17 +85,8 @@ The target structure for the EAR should look like this:
 --------------------------------------------------------------------------------
 test.ear:
 |---- lib
-      |---- xbean-finder-shaded-3.16.jar
-      |---- xbean-asm4-shaded-3.16.jar
       |---- tomitribe-util-1.0.0.jar
-      |---- commons-lang3-3.1.jar
-      |---- tomitribe-crest-17920409709550746.jar
-      |---- bval-jsr303-0.5.jar
       |---- telnet-connector-api-1.0.0-SNAPSHOT.jar
-      |---- geronimo-validation_1.0_spec-1.1.jar
-      |---- bval-core-0.5.jar
-      |---- xbean-asm-shaded-3.16.jar
-      |---- commons-beanutils-core-1.8.3.jar
 |---- telnet-connector-rar-1.0.0-SNAPSHOT.rar
 |---- <ejb-jar-with-mdb-commands>.jar
 |---- META-INF
