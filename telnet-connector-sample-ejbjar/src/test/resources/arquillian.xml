@@ -23,6 +23,8 @@
     <configuration>
       <property name="classifier">plus</property>
       <property name="conf">src/test/resources/conf</property>
+      <property name="httpPort">-1</property>
+      <property name="stopPort">-1</property>
     </configuration>
   </container>
 </arquillian>
