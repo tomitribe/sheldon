@@ -47,6 +47,11 @@
       <version>1.0.0-SNAPSHOT</version>
       <type>rar</type>
     </dependency>
+    <dependency>
+      <groupId>org.tomitribe</groupId>
+      <artifactId>tomitribe-crest-api</artifactId>
+      <scope>runtime</scope>
+    </dependency>    
   </dependencies>
   <build>
     <plugins>

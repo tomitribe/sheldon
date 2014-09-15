@@ -55,6 +55,12 @@
       </dependency>
       <dependency>
         <groupId>org.tomitribe</groupId>
+        <artifactId>tomitribe-crest-api</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.tomitribe</groupId>
         <artifactId>tomitribe-util</artifactId>
         <version>1.0.0</version>
       </dependency>

@@ -86,6 +86,7 @@ The target structure for the EAR should look like this:
 test.ear:
 |---- lib
       |---- tomitribe-util-1.0.0.jar
+      |---- tomitribe-crest-1.0.0-SNAPSHOT.jar
       |---- telnet-connector-api-1.0.0-SNAPSHOT.jar
 |---- telnet-connector-rar-1.0.0-SNAPSHOT.rar
 |---- <ejb-jar-with-mdb-commands>.jar
@@ -97,7 +98,7 @@ test.ear:
 If you use Maven, you can achieve the above structure using the following in your POM:
 
 --------------------------------------------------------------------------------
-<dependencies>
+  <dependencies>
     <dependency>
       <groupId>org.tomitribe</groupId>
       <artifactId>telnet-connector-sample-ejb</artifactId>
@@ -110,6 +111,11 @@ If you use Maven, you can achieve the above structure using the following in you
       <version>1.0.0-SNAPSHOT</version>
       <type>rar</type>
     </dependency>
+    <dependency>
+      <groupId>org.tomitribe</groupId>
+      <artifactId>tomitribe-crest-api</artifactId>
+      <scope>runtime</scope>
+    </dependency>    
   </dependencies>
   <build>
     <plugins>
