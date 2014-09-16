@@ -16,7 +16,7 @@
   ~ limitations under the License.
   -->
 
-<!-- $Rev: 1387962 $ $Date: 2012-09-20 05:53:17 -0500 (Thu, 20 Sep 2012) 
+<!-- $Rev: 1387962 $ $Date: 2012-09-20 05:53:17 -0500 (Thu, 20 Sep 2012)
   $ -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -26,32 +26,32 @@
 
   <parent>
     <groupId>org.tomitribe</groupId>
-    <artifactId>telnet-connector-parent</artifactId>
+    <artifactId>crest-connector-parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>telnet-connector-sample-ear</artifactId>
+  <artifactId>crest-connector-sample-ear</artifactId>
   <packaging>ear</packaging>
-  <name>Telnet Connector :: Sample EAR</name>
+  <name>Crest Connector :: Sample EAR</name>
 
   <dependencies>
     <dependency>
       <groupId>org.tomitribe</groupId>
-      <artifactId>telnet-connector-sample-ejb</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <artifactId>crest-connector-sample-ejb</artifactId>
+      <version>${project.version}</version>
       <type>ejb</type>
     </dependency>
     <dependency>
       <groupId>org.tomitribe</groupId>
-      <artifactId>telnet-connector-rar</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <artifactId>crest-connector-rar</artifactId>
+      <version>${project.version}</version>
       <type>rar</type>
     </dependency>
     <dependency>
       <groupId>org.tomitribe</groupId>
       <artifactId>tomitribe-crest-api</artifactId>
       <scope>runtime</scope>
-    </dependency>    
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -72,11 +72,11 @@
           <modules>
             <rarModule>
               <groupId>org.tomitribe</groupId>
-              <artifactId>telnet-connector-rar</artifactId>
+              <artifactId>crest-connector-rar</artifactId>
             </rarModule>
             <ejbModule>
               <groupId>org.tomitribe</groupId>
-              <artifactId>telnet-connector-sample-ejb</artifactId>
+              <artifactId>crest-connector-sample-ejb</artifactId>
             </ejbModule>
           </modules>
         </configuration>
@@ -84,4 +84,3 @@
     </plugins>
   </build>
 </project>
-
