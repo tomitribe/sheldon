@@ -4,7 +4,7 @@ Crest Connector
 Overview
 --------
 
-The Telnet connector provides an interactive shell environment that can be accessed via SSH or Telnet.
+The Crest connector provides an interactive shell environment that can be accessed via SSH or Telnet.
 The commands available in the shell are provided by implementing message driven beans (MDBs) using Crest -
 a command line API styled after JAX-RS.
 
