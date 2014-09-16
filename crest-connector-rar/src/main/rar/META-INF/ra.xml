@@ -27,7 +27,7 @@
 		<license-required>false</license-required>
 	</license>
 	<resourceadapter>
-		<resourceadapter-class>org.tomitribe.crest.connector.adapter.TelnetResourceAdapter</resourceadapter-class>
+		<resourceadapter-class>org.tomitribe.crest.connector.adapter.CrestResourceAdapter</resourceadapter-class>
 		<config-property>
 			<config-property-name>sshPort</config-property-name>
 			<config-property-type>java.lang.Integer</config-property-type>
@@ -41,14 +41,14 @@
 		<config-property>
 			<config-property-name>prompt</config-property-name>
 			<config-property-type>java.lang.String</config-property-type>
-			<config-property-value>prompt&gt;</config-property-value>
+			<config-property-value>prompt&gt; </config-property-value>
 		</config-property>
 		<inbound-resourceadapter>
 			<messageadapter>
 				<messagelistener>
 					<messagelistener-type>org.tomitribe.crest.connector.api.CrestListener</messagelistener-type>
 					<activationspec>
-						<activationspec-class>org.tomitribe.crest.connector.adapter.TelnetActivationSpec</activationspec-class>
+						<activationspec-class>org.tomitribe.crest.connector.adapter.CrestActivationSpec</activationspec-class>
 					</activationspec>
 				</messagelistener>
 			</messageadapter>

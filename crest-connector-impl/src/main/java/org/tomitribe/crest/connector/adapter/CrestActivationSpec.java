@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Activation(messageListeners = CrestListener.class)
-public class TelnetActivationSpec implements ActivationSpec {
+public class CrestActivationSpec implements ActivationSpec {
 
     private ResourceAdapter resourceAdapter;
     private Class beanClass;

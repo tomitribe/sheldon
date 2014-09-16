@@ -31,7 +31,7 @@ import org.tomitribe.crest.connector.telnet.ConsoleSession;
 import org.tomitribe.crest.connector.telnet.StopException;
 import org.tomitribe.crest.connector.telnet.TtyCodes;
 
-public class TomEECommands implements Command, Runnable, TtyCodes, SessionAware {
+public class CrestCommands implements Command, Runnable, TtyCodes, SessionAware {
 
     private OutputStream err;
     private ExitCallback cbk;
@@ -44,7 +44,7 @@ public class TomEECommands implements Command, Runnable, TtyCodes, SessionAware 
     private final SecurityHandler contextRunnable;
     private ServerSession session;
 
-    public TomEECommands(ConsoleSession session, SecurityHandler contextRunnable) {
+    public CrestCommands(ConsoleSession session, SecurityHandler contextRunnable) {
         super();
         this.consoleSession = session;
         this.contextRunnable = contextRunnable;

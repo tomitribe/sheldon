@@ -51,7 +51,7 @@ import org.tomitribe.crest.connector.telnet.ConsoleSession;
 import org.tomitribe.crest.connector.telnet.TelnetServer;
 
 @Connector(description = "Telnet ResourceAdapter", displayName = "Telnet ResourceAdapter", eisType = "Telnet Adapter", version = "1.0")
-public class TelnetResourceAdapter implements ResourceAdapter, SecurityHandler {
+public class CrestResourceAdapter implements ResourceAdapter, SecurityHandler {
 
     private TelnetServer telnetServer;
     private SshdServer sshdServer;
@@ -142,7 +142,7 @@ public class TelnetResourceAdapter implements ResourceAdapter, SecurityHandler {
     public void endpointActivation(final MessageEndpointFactory messageEndpointFactory, final ActivationSpec activationSpec)
             throws ResourceException
     {
-        final TelnetActivationSpec telnetActivationSpec = (TelnetActivationSpec) activationSpec;
+        final CrestActivationSpec telnetActivationSpec = (CrestActivationSpec) activationSpec;
 
         workManager.scheduleWork(new Work() {
 
@@ -176,7 +176,7 @@ public class TelnetResourceAdapter implements ResourceAdapter, SecurityHandler {
     }
 
     public void endpointDeactivation(MessageEndpointFactory messageEndpointFactory, ActivationSpec activationSpec) {
-        final TelnetActivationSpec telnetActivationSpec = (TelnetActivationSpec) activationSpec;
+        final CrestActivationSpec telnetActivationSpec = (CrestActivationSpec) activationSpec;
 
         final EndpointTarget endpointTarget = targets.get(telnetActivationSpec);
         if (endpointTarget == null) {
@@ -195,7 +195,7 @@ public class TelnetResourceAdapter implements ResourceAdapter, SecurityHandler {
         return new XAResource[0];
     }
 
-    final Map<TelnetActivationSpec, EndpointTarget> targets = new ConcurrentHashMap<TelnetActivationSpec, EndpointTarget>();
+    final Map<CrestActivationSpec, EndpointTarget> targets = new ConcurrentHashMap<CrestActivationSpec, EndpointTarget>();
     private WorkManager workManager;
 
     @Override
@@ -260,7 +260,7 @@ public class TelnetResourceAdapter implements ResourceAdapter, SecurityHandler {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        TelnetResourceAdapter other = (TelnetResourceAdapter) obj;
+        CrestResourceAdapter other = (CrestResourceAdapter) obj;
         if (prompt == null) {
             if (other.prompt != null)
                 return false;

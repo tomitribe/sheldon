@@ -26,7 +26,7 @@ import org.apache.sshd.server.keyprovider.PEMGeneratorHostKeyProvider;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.tomitribe.crest.connector.adapter.SecurityHandler;
 import org.tomitribe.crest.connector.authenticator.PasswordAuthenticatorImpl;
-import org.tomitribe.crest.connector.commands.factories.TomEEComandsFactory;
+import org.tomitribe.crest.connector.commands.factories.CrestComandsFactory;
 import org.tomitribe.crest.connector.telnet.ConsoleSession;
 
 public class SshdServer {
@@ -71,7 +71,7 @@ public class SshdServer {
                     .getPath()));
         }
 
-        sshServer.setShellFactory(new TomEEComandsFactory(session, securityHandler));
+        sshServer.setShellFactory(new CrestComandsFactory(session, securityHandler));
         sshServer.setPasswordAuthenticator(new PasswordAuthenticatorImpl(securityHandler));
 
         try {

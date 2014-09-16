@@ -20,21 +20,21 @@ package org.tomitribe.crest.connector.commands.factories;
 import org.apache.sshd.common.Factory;
 import org.apache.sshd.server.Command;
 import org.tomitribe.crest.connector.adapter.SecurityHandler;
-import org.tomitribe.crest.connector.commands.TomEECommands;
+import org.tomitribe.crest.connector.commands.CrestCommands;
 import org.tomitribe.crest.connector.telnet.ConsoleSession;
 
-public class TomEEComandsFactory implements Factory<Command> {
+public class CrestComandsFactory implements Factory<Command> {
 
     private final ConsoleSession session;
     private final SecurityHandler contextRunnable;
 
-    public TomEEComandsFactory(ConsoleSession session, SecurityHandler contextRunnable) {
+    public CrestComandsFactory(ConsoleSession session, SecurityHandler contextRunnable) {
         this.session = session;
         this.contextRunnable = contextRunnable;
     }
 
     @Override
     public Command create() {
-        return new TomEECommands(session, contextRunnable);
+        return new CrestCommands(session, contextRunnable);
     }
 }
