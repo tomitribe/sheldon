@@ -19,15 +19,15 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/connector_1_7.xsd"
       version="1.7">
-	<description>Telnet ResourceAdapter</description>
-	<display-name>Telnet ResourceAdapter</display-name>
-	<eis-type>Telnet Adapter</eis-type>
+	<description>Crest Connector Resource Adapter</description>
+	<display-name>Crest Connector Resource Adapter</display-name>
+	<eis-type>Crest Adapter</eis-type>
 	<resourceadapter-version>1.0</resourceadapter-version>
 	<license>
 		<license-required>false</license-required>
 	</license>
 	<resourceadapter>
-		<resourceadapter-class>org.tomitribe.telnet.adapter.TelnetResourceAdapter</resourceadapter-class>
+		<resourceadapter-class>org.tomitribe.crest.connector.adapter.TelnetResourceAdapter</resourceadapter-class>
 		<config-property>
 			<config-property-name>sshPort</config-property-name>
 			<config-property-type>java.lang.Integer</config-property-type>
@@ -46,9 +46,9 @@
 		<inbound-resourceadapter>
 			<messageadapter>
 				<messagelistener>
-					<messagelistener-type>org.tomitribe.telnet.api.TelnetListener</messagelistener-type>
+					<messagelistener-type>org.tomitribe.crest.connector.api.CrestListener</messagelistener-type>
 					<activationspec>
-						<activationspec-class>org.tomitribe.telnet.adapter.TelnetActivationSpec</activationspec-class>
+						<activationspec-class>org.tomitribe.crest.connector.adapter.TelnetActivationSpec</activationspec-class>
 					</activationspec>
 				</messagelistener>
 			</messageadapter>

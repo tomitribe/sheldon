@@ -14,23 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.superbiz;
-
-import javax.annotation.Resource;
-import javax.ejb.MessageDriven;
-import javax.ejb.MessageDrivenContext;
+package org.tomitribe.crest.connector.telnet;
 
 import org.tomitribe.crest.api.Command;
-import org.tomitribe.crest.connector.api.CrestListener;
 
-@MessageDriven(name = "User")
-public class UserBean implements CrestListener {
-
-    @Resource
-    private MessageDrivenContext context;
-    
+public class BuildIn {
     @Command
-    public String whoami() {
-        return context.getCallerPrincipal() == null ? "Unknown" : context.getCallerPrincipal().getName();
+    public void exit() throws StopException {
+        throw new StopException();
     }
 }

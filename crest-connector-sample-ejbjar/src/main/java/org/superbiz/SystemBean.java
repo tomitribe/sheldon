@@ -17,15 +17,16 @@
 package org.superbiz;
 
 import org.tomitribe.crest.api.Command;
-import org.tomitribe.telnet.api.TelnetListener;
+import org.tomitribe.crest.connector.api.CrestListener;
 import org.tomitribe.util.PrintString;
 
 import javax.ejb.MessageDriven;
+
 import java.util.Map;
 import java.util.TreeSet;
 
 @MessageDriven(name = "System")
-public class SystemBean implements TelnetListener {
+public class SystemBean implements CrestListener {
 
     @Command
     public String date() {

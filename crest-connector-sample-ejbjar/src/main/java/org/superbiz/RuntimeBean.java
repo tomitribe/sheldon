@@ -19,14 +19,14 @@ package org.superbiz;
 import org.tomitribe.crest.api.Command;
 import org.tomitribe.crest.api.Default;
 import org.tomitribe.crest.api.Option;
-import org.tomitribe.telnet.api.TelnetListener;
+import org.tomitribe.crest.connector.api.CrestListener;
 import org.tomitribe.util.Size;
 import org.tomitribe.util.SizeUnit;
 
 import javax.ejb.MessageDriven;
 
 @MessageDriven(name = "Runtime")
-public class RuntimeBean implements TelnetListener {
+public class RuntimeBean implements CrestListener {
 
     @Command
     public int processors() {

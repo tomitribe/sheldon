@@ -21,12 +21,12 @@ import java.io.File;
 import javax.ejb.MessageDriven;
 
 import org.tomitribe.crest.api.Command;
+import org.tomitribe.crest.connector.api.CrestListener;
 import org.tomitribe.crest.val.Directory;
 import org.tomitribe.crest.val.Exists;
-import org.tomitribe.telnet.api.TelnetListener;
 
 @MessageDriven(name = "SystemProperties")
-public class SystemPropertiesBean implements TelnetListener {
+public class SystemPropertiesBean implements CrestListener {
 
     @Command
     public String home() {
