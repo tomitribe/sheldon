@@ -100,14 +100,14 @@ public class CrestResourceAdapter implements ResourceAdapter, SecurityHandler {
 
         workManager = bootstrapContext.getWorkManager();
         main = new Main();
-
+        
         // add built-in commands
         final Map<String, Cmd> commands = Commands.get(new BuildIn());
         for (Cmd cmd : commands.values()) {
             main.add(cmd);
         }
 
-        session = new ConsoleSession(main, prompt);
+        session = new ConsoleSession(main, prompt + " ");
 
         if (sshPort != null) {
             sshdServer = new SshdServer(session, sshPort, this);

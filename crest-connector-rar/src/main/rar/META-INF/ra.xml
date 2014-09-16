@@ -41,7 +41,7 @@
 		<config-property>
 			<config-property-name>prompt</config-property-name>
 			<config-property-type>java.lang.String</config-property-type>
-			<config-property-value>prompt&gt; </config-property-value>
+			<config-property-value>prompt&gt;</config-property-value>
 		</config-property>
 		<inbound-resourceadapter>
 			<messageadapter>
