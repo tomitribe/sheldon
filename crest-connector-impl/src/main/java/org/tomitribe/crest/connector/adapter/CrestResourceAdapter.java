@@ -59,7 +59,7 @@ public class CrestResourceAdapter implements ResourceAdapter, SecurityHandler {
     /**
      * Corresponds to the ra.xml <config-property>
      */
-    @ConfigProperty(defaultValue = "prompt> ")
+    @ConfigProperty(defaultValue = "prompt>")
     @NotNull
     private String prompt;
 
