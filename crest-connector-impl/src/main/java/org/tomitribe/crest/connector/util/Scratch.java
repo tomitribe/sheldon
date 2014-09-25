@@ -31,12 +31,15 @@ import java.util.concurrent.Future;
 
 public class Scratch {
 
-
+    /**
+     * Will be pretty complicated for the connector scenario.  Have to shelve for now
+     * Each invocation will need to be done in an appropriately setup thread that has
+     * the correct security and CDI context thread locals.
+     */
     public static void main(String[] args) throws Exception {
         final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
 
-//        final List<Section> sections = new ArrayList<Section>();
         Section section;
 
         // RED ----------------------------------------------------------------
