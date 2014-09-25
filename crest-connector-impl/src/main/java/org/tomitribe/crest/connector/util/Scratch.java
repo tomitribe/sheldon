@@ -19,9 +19,6 @@ package org.tomitribe.crest.connector.util;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -57,29 +54,61 @@ public class Scratch {
         final PrintStream toSystemOut = System.out;
         final InputStream fromGreen = new ByteArrayInputStream(toOrangeBuffer.toByteArray());
 
-        final Future<?> orange = executorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final BufferedReader reader = new BufferedReader(new InputStreamReader(fromGreen));
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        if (line.contains("0")) {
-                            toSystemOut.println(line + "!!!!!");
-                        } else {
-                            toSystemOut.println(line);
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    throw new RuntimeException(e);
-                }
-            }
-        });
+        final Future<?> orange = executorService.submit(new ImportantNumbers(fromGreen, toSystemOut));
 
         orange.get();
 
         executorService.shutdown();
     }
 
+    private static class ToUpperCase implements Runnable {
+        private final InputStream fromPrevious;
+        private final PrintStream toNext;
+
+        public ToUpperCase(InputStream fromPrevious, PrintStream toNext) {
+            this.fromPrevious = fromPrevious;
+            this.toNext = toNext;
+        }
+
+        @Override
+        public void run() {
+            try {
+                int i;
+                while ((i = fromPrevious.read()) != -1) {
+                    toNext.write(Character.toUpperCase(i));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private static class ImportantNumbers implements Runnable {
+        private final InputStream fromPrevious;
+        private final PrintStream toNext;
+
+        public ImportantNumbers(InputStream fromPrevious, PrintStream toNext) {
+            this.fromPrevious = fromPrevious;
+            this.toNext = toNext;
+        }
+
+        @Override
+        public void run() {
+            try {
+                final BufferedReader reader = new BufferedReader(new InputStreamReader(fromPrevious));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.contains("0")) {
+                        toNext.println(line + "!!!!!");
+                    } else {
+                        toNext.println(line);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }
