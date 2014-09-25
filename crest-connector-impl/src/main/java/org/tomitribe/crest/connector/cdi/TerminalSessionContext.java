@@ -75,6 +75,14 @@ public class TerminalSessionContext implements Context {
         return state.get() != null;
     }
 
+    public static void destroy() {
+        final TerminalState terminalState = state.get();
+        if (terminalState != null) {
+            terminalState.destroy();
+            state.remove();
+        }
+    }
+
     public static class TerminalState {
 
         private static int ids = 1000;

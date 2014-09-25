@@ -16,21 +16,28 @@
  */
 package org.tomitribe.crest.connector.telnet;
 
-import java.io.FilterOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-
 import jline.Terminal;
 import jline.UnsupportedTerminal;
 import jline.console.ConsoleReader;
-
 import org.tomitribe.crest.Main;
 import org.tomitribe.crest.cmds.CommandFailedException;
+import org.tomitribe.crest.connector.cdi.TerminalSessionContext;
 import org.tomitribe.crest.connector.util.Utils;
 import org.tomitribe.crest.environments.Environment;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class ConsoleSession implements TtyCodes {
 
@@ -79,6 +86,8 @@ public class ConsoleSession implements TtyCodes {
         } catch (Throwable e) {
             e.printStackTrace(new PrintStream(out));
             throw new StopException(e);
+        } finally {
+            TerminalSessionContext.destroy();
         }
     }
 
