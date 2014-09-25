@@ -22,6 +22,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,37 +41,35 @@ public class Scratch {
         final InputStream fromSystemIn = new ByteArrayInputStream(new byte[0]);
 
         //    out
-        final ByteArrayOutputStream redData = new ByteArrayOutputStream();
+        final PipedOutputStream redData = new PipedOutputStream();
         final PrintStream toGreen = new PrintStream(redData);
 
         final Future<?> red = executorService.submit(new BottlesOfBeer(fromSystemIn, toGreen));
 
-        red.get(); // finish red
-
-        toGreen.close(); //
-
         // GREEN --------------------------------------------------------------
 
-        final InputStream fromRed = new ByteArrayInputStream(redData.toByteArray());
+        final InputStream fromRed = new PipedInputStream(redData);
 
-        final ByteArrayOutputStream greenData = new ByteArrayOutputStream();
+        final PipedOutputStream greenData = new PipedOutputStream();
         final PrintStream toBlue = new PrintStream(greenData);
 
         final Future<?> green = executorService.submit(new ImportantNumbers(fromRed, toBlue));
 
-        green.get();
-        toBlue.close();
-
         // BLUE ---------------------------------------------------------------
 
-        final InputStream fromGreen = new ByteArrayInputStream(greenData.toByteArray());
+        final InputStream fromGreen = new PipedInputStream(greenData);
 
         final PrintStream toSystemOut = System.out;
 
         final Future<?> blue = executorService.submit(new ToUpperCase(fromGreen, toSystemOut));
 
-        blue.get();
+        red.get();
+        redData.close();
 
+        green.get();
+        greenData.close();
+
+        blue.get();
 
         executorService.shutdown();
     }
