@@ -20,7 +20,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
@@ -30,6 +29,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class Scratch {
+
+    public void iHateThisCheckStyleCheck(){}
 
     /**
      * Will be pretty complicated for the connector scenario.  Have to shelve for now

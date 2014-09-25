@@ -25,19 +25,12 @@ import org.tomitribe.crest.connector.cdi.TerminalSessionContext;
 import org.tomitribe.crest.connector.util.Utils;
 import org.tomitribe.crest.environments.Environment;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class ConsoleSession implements TtyCodes {
 
