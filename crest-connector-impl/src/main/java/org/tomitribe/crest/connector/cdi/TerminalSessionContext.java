@@ -57,7 +57,7 @@ public class TerminalSessionContext implements Context {
 
         if (terminalState == null) return null;
 
-        return terminalState.getInstance(creationalContext, bean);
+        return terminalState.getInstance(creationalContext, bean, beanManager);
     }
 
     public <T> T get(Contextual<T> contextual) {
@@ -67,7 +67,7 @@ public class TerminalSessionContext implements Context {
 
         if (terminalState == null) return null;
 
-        return terminalState.getInstance(null, bean);
+        return terminalState.getInstance(null, bean, beanManager);
     }
 
     public boolean isActive() {
@@ -95,7 +95,7 @@ public class TerminalSessionContext implements Context {
             logger.info(m("Constructed"));
         }
 
-        private <T> T getInstance(final CreationalContext<T> creationalContext, final Bean<T> bean) {
+        private <T> T getInstance(final CreationalContext<T> creationalContext, final Bean<T> bean, final BeanManager beanManager) {
             final Class<?> beanClass = bean.getBeanClass();
 
             logger.info(m("getInstance(%s)", beanClass.getName()));
@@ -104,6 +104,12 @@ public class TerminalSessionContext implements Context {
                 @Override
                 public ScopedInstance<?> apply(final Class<?> ignored) {
                     logger.info(m("create(%s)", beanClass.getName()));
+
+                    if (creationalContext == null) {
+                        final CreationalContext<T> context = beanManager.createCreationalContext(bean);
+                        return new ScopedInstance<T>(bean, context, bean.create(context));
+                    }
+
                     return new ScopedInstance<T>(bean, creationalContext, bean.create(creationalContext));
                 }
             });
