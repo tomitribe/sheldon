@@ -46,15 +46,23 @@ public class Scratch {
         final PipedOutputStream greenPipe = new PipedOutputStream();
         final Future<?> green = executorService.submit(new ImportantNumbers(new PipedInputStream(redPipe), new PrintStream(greenPipe)));
 
+        // GREEN --------------------------------------------------------------
+
+        final PipedOutputStream yellowPipe = new PipedOutputStream();
+        final Future<?> yellow = executorService.submit(new Translator(new PipedInputStream(greenPipe), new PrintStream(yellowPipe)));
+
         // BLUE ---------------------------------------------------------------
 
-        final Future<?> blue = executorService.submit(new ToUpperCase(new PipedInputStream(greenPipe), System.out));
+        final Future<?> blue = executorService.submit(new ToUpperCase(new PipedInputStream(yellowPipe), System.out));
 
         red.get();
         redPipe.close();
 
         green.get();
         greenPipe.close();
+
+        yellow.get();
+        yellowPipe.close();
 
         blue.get();
 
@@ -122,6 +130,30 @@ public class Scratch {
                     } else {
                         toNext.println(line);
                     }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private static class Translator implements Runnable {
+        private final InputStream fromPrevious;
+        private final PrintStream toNext;
+
+        public Translator(InputStream fromPrevious, PrintStream toNext) {
+            this.fromPrevious = fromPrevious;
+            this.toNext = toNext;
+        }
+
+        @Override
+        public void run() {
+            try {
+                final BufferedReader reader = new BufferedReader(new InputStreamReader(fromPrevious));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    toNext.println(line.replace("beer", "cerveza"));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
