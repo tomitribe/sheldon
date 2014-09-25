@@ -37,37 +37,24 @@ public class Scratch {
         final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
         // RED ----------------------------------------------------------------
-        //    in
-        final InputStream fromSystemIn = new ByteArrayInputStream(new byte[0]);
 
-        //    out
-        final PipedOutputStream redData = new PipedOutputStream();
-        final PrintStream toGreen = new PrintStream(redData);
-
-        final Future<?> red = executorService.submit(new BottlesOfBeer(fromSystemIn, toGreen));
+        final PipedOutputStream redPipe = new PipedOutputStream();
+        final Future<?> red = executorService.submit(new BottlesOfBeer(System.in, new PrintStream(redPipe)));
 
         // GREEN --------------------------------------------------------------
 
-        final InputStream fromRed = new PipedInputStream(redData);
-
-        final PipedOutputStream greenData = new PipedOutputStream();
-        final PrintStream toBlue = new PrintStream(greenData);
-
-        final Future<?> green = executorService.submit(new ImportantNumbers(fromRed, toBlue));
+        final PipedOutputStream greenPipe = new PipedOutputStream();
+        final Future<?> green = executorService.submit(new ImportantNumbers(new PipedInputStream(redPipe), new PrintStream(greenPipe)));
 
         // BLUE ---------------------------------------------------------------
 
-        final InputStream fromGreen = new PipedInputStream(greenData);
-
-        final PrintStream toSystemOut = System.out;
-
-        final Future<?> blue = executorService.submit(new ToUpperCase(fromGreen, toSystemOut));
+        final Future<?> blue = executorService.submit(new ToUpperCase(new PipedInputStream(greenPipe), System.out));
 
         red.get();
-        redData.close();
+        redPipe.close();
 
         green.get();
-        greenData.close();
+        greenPipe.close();
 
         blue.get();
 
