@@ -32,33 +32,63 @@ public class Scratch {
 
     public static void main(String[] args) throws Exception {
         final ExecutorService executorService = Executors.newFixedThreadPool(10);
-        final ByteArrayOutputStream toOrangeBuffer = new ByteArrayOutputStream();
 
-
-        final PrintStream toOrange = new PrintStream(toOrangeBuffer);
+        // RED ----------------------------------------------------------------
+        //    in
         final InputStream fromSystemIn = new ByteArrayInputStream(new byte[0]);
 
-        final Future<?> green = executorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 99; i > 0; i--) {
-                    toOrange.printf("%s bottles of beer on the wall%n", i);
-                    System.out.printf("==%s bottles of beer on the wall%n", i);
-                }
-            }
-        });
+        //    out
+        final ByteArrayOutputStream redData = new ByteArrayOutputStream();
+        final PrintStream toGreen = new PrintStream(redData);
+
+        final Future<?> red = executorService.submit(new BottlesOfBeer(fromSystemIn, toGreen));
+
+        red.get(); // finish red
+
+        toGreen.close(); //
+
+        // GREEN --------------------------------------------------------------
+
+        final InputStream fromRed = new ByteArrayInputStream(redData.toByteArray());
+
+        final ByteArrayOutputStream greenData = new ByteArrayOutputStream();
+        final PrintStream toBlue = new PrintStream(greenData);
+
+        final Future<?> green = executorService.submit(new ImportantNumbers(fromRed, toBlue));
 
         green.get();
-        toOrange.close();
+        toBlue.close();
+
+        // BLUE ---------------------------------------------------------------
+
+        final InputStream fromGreen = new ByteArrayInputStream(greenData.toByteArray());
 
         final PrintStream toSystemOut = System.out;
-        final InputStream fromGreen = new ByteArrayInputStream(toOrangeBuffer.toByteArray());
 
-        final Future<?> orange = executorService.submit(new ImportantNumbers(fromGreen, toSystemOut));
+        final Future<?> blue = executorService.submit(new ToUpperCase(fromGreen, toSystemOut));
 
-        orange.get();
+        blue.get();
+
 
         executorService.shutdown();
+    }
+
+    private static class BottlesOfBeer implements Runnable {
+        private final InputStream fromPrevious;
+        private final PrintStream toNext;
+
+        public BottlesOfBeer(InputStream fromPrevious, PrintStream toNext) {
+            this.fromPrevious = fromPrevious;
+            this.toNext = toNext;
+        }
+
+        @Override
+        public void run() {
+            for (int i = 99; i > 0; i--) {
+                toNext.printf("%s bottles of beer on the wall%n", i);
+                System.out.printf("==%s bottles of beer on the wall%n", i);
+            }
+        }
     }
 
     private static class ToUpperCase implements Runnable {
