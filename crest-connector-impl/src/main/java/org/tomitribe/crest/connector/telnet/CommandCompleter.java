@@ -52,7 +52,7 @@ public class CommandCompleter implements Completer {
         }
         
         final int pos = buffer.lastIndexOf(" ", cursor) + 1;
-        return pos;        
+        return pos;
     }
 
 }
