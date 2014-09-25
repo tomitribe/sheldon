@@ -107,7 +107,7 @@ public class CrestResourceAdapter implements ResourceAdapter, SecurityHandler {
             main.add(cmd);
         }
 
-        session = new ConsoleSession(main, prompt + " ");
+        session = new ConsoleSession(main, prompt);
 
         if (sshPort != null) {
             sshdServer = new SshdServer(session, sshPort, this);

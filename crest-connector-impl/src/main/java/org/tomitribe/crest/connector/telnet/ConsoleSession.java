@@ -60,7 +60,7 @@ public class ConsoleSession implements TtyCodes {
         ConsoleReader reader = new ConsoleReader(in, fo, term);
         reader.addCompleter(new CommandCompleter(main));
 
-        reader.setPrompt(prompt);
+        reader.setPrompt(String.format("\u001B[33m%s\u001B[0m ", prompt));
         PrintWriter writer = new PrintWriter(reader.getOutput());
         writer.println("");
         writer.println("type \'help\' for a list of commands");
