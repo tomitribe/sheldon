@@ -26,6 +26,9 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -36,37 +39,53 @@ public class Scratch {
     public static void main(String[] args) throws Exception {
         final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
+        final List<Section> sections = new ArrayList<Section>();
+
         // RED ----------------------------------------------------------------
 
         final PipedOutputStream redPipe = new PipedOutputStream();
         final Future<?> red = executorService.submit(new BottlesOfBeer(System.in, new PrintStream(redPipe)));
+        sections.add(new Section(redPipe, red));
 
         // GREEN --------------------------------------------------------------
 
         final PipedOutputStream greenPipe = new PipedOutputStream();
         final Future<?> green = executorService.submit(new ImportantNumbers(new PipedInputStream(redPipe), new PrintStream(greenPipe)));
+        sections.add(new Section(greenPipe, green));
 
         // GREEN --------------------------------------------------------------
 
         final PipedOutputStream yellowPipe = new PipedOutputStream();
         final Future<?> yellow = executorService.submit(new Translator(new PipedInputStream(greenPipe), new PrintStream(yellowPipe)));
-
-        // BLUE ---------------------------------------------------------------
+        sections.add(new Section(yellowPipe, yellow));
 
         final Future<?> blue = executorService.submit(new ToUpperCase(new PipedInputStream(yellowPipe), System.out));
+        sections.add(new Section(null, blue));
 
-        red.get();
-        redPipe.close();
-
-        green.get();
-        greenPipe.close();
-
-        yellow.get();
-        yellowPipe.close();
-
-        blue.get();
+        for (final Section section : sections) {
+            section.complete();
+        }
 
         executorService.shutdown();
+    }
+
+
+    public static class Section {
+        private final OutputStream outputStream;
+        private final Future<?> future;
+
+        public Section(OutputStream outputStream, Future<?> future) {
+            this.outputStream = outputStream;
+            this.future = future;
+        }
+
+        public void complete() throws ExecutionException, InterruptedException, IOException {
+            future.get();
+            if (outputStream instanceof PipedOutputStream) {
+                PipedOutputStream pipedOutputStream = (PipedOutputStream) outputStream;
+                pipedOutputStream.close();
+            }
+        }
     }
 
     private static class BottlesOfBeer implements Runnable {
