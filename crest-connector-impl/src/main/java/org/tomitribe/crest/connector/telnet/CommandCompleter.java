@@ -47,12 +47,11 @@ public class CommandCompleter implements Completer {
 
             candidates.addAll(main.complete(buffer, cursor));
 
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (final Throwable t) {
+            // no-op
         }
-        
-        final int pos = buffer.lastIndexOf(" ", cursor) + 1;
-        return pos;
+
+        return buffer.lastIndexOf(" ", cursor) + 1;
     }
 
 }

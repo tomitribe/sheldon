@@ -90,7 +90,7 @@ public class TelnetServer implements TtyCodes {
                 super.write(i);
 
                 // workaround for MacOSX!! reset line after CR..
-                if (Utils.isMac() && i == ConsoleReader.CR.toCharArray()[0]) {
+                if (!Utils.isWin() && i == ConsoleReader.CR.toCharArray()[0]) {
                     super.write(ConsoleReader.RESET_LINE);
                 }
             }

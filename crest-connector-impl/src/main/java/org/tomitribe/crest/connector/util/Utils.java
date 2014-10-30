@@ -16,13 +16,16 @@
  */
 package org.tomitribe.crest.connector.util;
 
+import java.util.Locale;
+
 public class Utils {
+    private static final boolean IS_WIN = System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("win");
 
     private Utils() {
+        // no-op
     }
     
-    public static boolean isMac() {
-        return System.getProperty("os.name").startsWith("Mac OS X");
+    public static boolean isWin() {
+        return IS_WIN;
     }
-
 }
