@@ -16,9 +16,6 @@
  */
 package org.tomitribe.crest.connector;
 
-import java.io.File;
-import java.util.concurrent.TimeUnit;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -33,6 +30,9 @@ import org.jboss.shrinkwrap.descriptor.api.connector10.Resourceadapter;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(Arquillian.class)
 public class Runner {
@@ -49,7 +49,7 @@ public class Runner {
         System.out.println();
         
         final JavaArchive rarLib = ShrinkWrap.create(JavaArchive.class, "lib.jar");
-        rarLib.addPackages(false, "org.tomitribe.crest.connector.ssh", "org.tomitribe.crest.connector.adapter", "org.tomitribe.crest.connector.telnet", "org.tomitribe.crest.connector.util", "org.tomitribe.crest.connector.commands.factories", "org.tomitribe.crest.connector.authenticator", "org.tomitribe.crest.connector.commands");
+        rarLib.addPackages(false, "org.tomitribe.crest.connector.cdi", "org.tomitribe.crest.connector.ssh", "org.tomitribe.crest.connector.adapter", "org.tomitribe.crest.connector.telnet", "org.tomitribe.crest.connector.util", "org.tomitribe.crest.connector.commands.factories", "org.tomitribe.crest.connector.authenticator", "org.tomitribe.crest.connector.commands");
         
         System.out.println(rarLib.toString(true));
         System.out.println();
