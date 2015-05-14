@@ -71,6 +71,13 @@
         <artifactId>javaee-api</artifactId>
         <scope>provided</scope>
       </dependency>
+      <dependency>
+        <groupId>org.apache.openejb</groupId>
+        <artifactId>apache-tomee</artifactId>
+        <version>1.7.0</version>
+        <classifier>plus</classifier>
+        <type>zip</type>
+      </dependency>
     </dependencies>
 
   <profiles>
