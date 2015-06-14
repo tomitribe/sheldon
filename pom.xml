@@ -24,15 +24,15 @@
     <version>2</version>
   </parent>
 
-  <artifactId>crest-connector-parent</artifactId>
+  <artifactId>crest-ssh-connector-parent</artifactId>
   <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>Crest Connector</name>
 
   <scm>
-    <connection>scm:git:git@github.com:tomitribe/crest-connector.git</connection>
-    <url>scm:git:git@github.com:tomitribe/crest-connector.git</url>
-    <developerConnection>scm:git:git@github.com:tomitribe/crest-connector.git</developerConnection>
+    <connection>scm:git:git@github.com:tomitribe/crest-ssh-connector.git</connection>
+    <url>scm:git:git@github.com:tomitribe/crest-ssh-connector.git</url>
+    <developerConnection>scm:git:git@github.com:tomitribe/crest-ssh-connector.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
@@ -99,11 +99,11 @@
     </dependencies>
   </dependencyManagement>
   <modules>
-    <module>crest-connector-api</module>
-    <module>crest-connector-impl</module>
-    <module>crest-connector-rar</module>
-    <module>crest-connector-sample-ejbjar</module>
-    <module>crest-connector-sample-ear</module>
+    <module>crest-ssh-connector-api</module>
+    <module>crest-ssh-connector-impl</module>
+    <module>crest-ssh-connector-rar</module>
+    <module>crest-ssh-connector-sample-ejbjar</module>
+    <module>crest-ssh-connector-sample-ear</module>
   </modules>
   <build>
     <defaultGoal>install</defaultGoal>
