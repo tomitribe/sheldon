@@ -25,14 +25,14 @@
 
   <artifactId>crest-ssh-connector-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.0</version>
+  <version>1.1-SNAPSHOT</version>
   <name>Crest Connector</name>
 
   <scm>
     <connection>scm:git:git@github.com:tomitribe/crest-ssh-connector.git</connection>
     <url>scm:git:git@github.com:tomitribe/crest-ssh-connector.git</url>
     <developerConnection>scm:git:git@github.com:tomitribe/crest-ssh-connector.git</developerConnection>
-    <tag>crest-ssh-connector-parent-1.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
