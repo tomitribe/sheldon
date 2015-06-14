@@ -4,12 +4,12 @@ Crest Connector
 Overview
 --------
 
-The Crest connector provides an interactive shell environment that can be accessed via SSH or Telnet.
+The Crest connector provides an interactive shell environment that can be accessed via SSH.
 The commands available in the shell are provided by implementing message driven beans (MDBs) using Crest -
 a command line API styled after JAX-RS.
 
 As an implementation of a JCA 1.7 inflow connector, this project aims for portability and has been tested
-using Apache TomEE 1.7.0 and Glassfish 4.
+using Apache TomEE 1.7.2.
 
 Features
 --------
@@ -25,16 +25,16 @@ Features
 Demo
 ----
 
-image:https://raw.githubusercontent.com/tomitribe/telnet-connector/master/terminal.gif[Demo]
+image:https://raw.githubusercontent.com/tomitribe/crest-ssh-connector/master/terminal.gif[Demo]
 
 
 Creating commands
 -----------------
 
-Defining new commands for the connector is straightforward. Define a new MDB with the @MessageDriven annotation.
-The MDB needs to implement the org.tomitribe.telnet.api.TelnetListener interface. This is simply a marker interface
-with no methods. Each command can then be provided as a public method with a @Command annotation, with any desired
-arguments, and any options annotated with @Option. Further Crest documentation is available here: .
+Defining new commands for the connector is straightforward. Define a new MDB with the +@MessageDriven+ annotation.
+The MDB needs to implement the +org.tomitribe.crest.connector.api.CrestListener+ interface. This is simply a marker interface
+with no methods. Each command can then be provided as a public method with a +@Command+ annotation, with any desired
+arguments, and any options annotated with +@Option+. Further Crest documentation is available here: https://github.com/tomitribe/crest/blob/master/README.adoc.
 
 Here's a simple example that provides a "freeMemory" command. This returns the free memory in the JVM - in MB by
 default.
@@ -67,14 +67,14 @@ Reference the RAR in META-INF/application.xml:
 --------------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
 <application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_6.xsd" version="6">
-  <description>Sonatype helps open source projects to set up Maven repositories on https://oss.sonatype.org/</description>
-  <display-name>telnet-connector-sample-ear</display-name>
+  <description>Crest SSH Connector Example</description>
+  <display-name>crest-ssh-connector-sample-ear</display-name>
   <initialize-in-order>true</initialize-in-order>
   <module>
-    <connector>telnet-connector-rar-1.0.0-SNAPSHOT.rar</connector>
+    <connector>crest-ssh-connector-rar-1.0.rar</connector>
   </module>
   <module>
-    <ejb>telnet-connector-sample-ejb-1.0.0-SNAPSHOT.jar</ejb>
+    <ejb>crest-ssh-connector-sample-ejb-1.0.jar</ejb>
   </module>
   <library-directory>lib</library-directory>
 </application>
@@ -85,10 +85,10 @@ The target structure for the EAR should look like this:
 --------------------------------------------------------------------------------
 test.ear:
 |---- lib
-      |---- tomitribe-util-1.0.0.jar
-      |---- tomitribe-crest-1.0.0-SNAPSHOT.jar
-      |---- telnet-connector-api-1.0.0-SNAPSHOT.jar
-|---- telnet-connector-rar-1.0.0-SNAPSHOT.rar
+      |---- tomitribe-util-1.1.0.jar
+      |---- tomitribe-crest-0.3.jar
+      |---- telnet-connector-api-1.0.jar
+|---- telnet-connector-rar-1.0.rar
 |---- <ejb-jar-with-mdb-commands>.jar
 |---- META-INF
       |---- application.xml
@@ -101,19 +101,20 @@ If you use Maven, you can achieve the above structure using the following in you
   <dependencies>
     <dependency>
       <groupId>org.tomitribe</groupId>
-      <artifactId>telnet-connector-sample-ejb</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <artifactId>crest-ssh-connector-sample-ejb</artifactId>
+      <version>1.0</version>
       <type>ejb</type>
     </dependency>
     <dependency>
       <groupId>org.tomitribe</groupId>
-      <artifactId>telnet-connector-rar</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <artifactId>crest-ssh-connector-rar</artifactId>
+      <version>1.0</version>
       <type>rar</type>
     </dependency>
     <dependency>
       <groupId>org.tomitribe</groupId>
       <artifactId>tomitribe-crest-api</artifactId>
+	  <version>0.3</version>
       <scope>runtime</scope>
     </dependency>    
   </dependencies>
@@ -136,11 +137,11 @@ If you use Maven, you can achieve the above structure using the following in you
           <modules>
             <rarModule>
               <groupId>org.tomitribe</groupId>
-              <artifactId>telnet-connector-rar</artifactId>
+              <artifactId>crest-ssh-connector-rar</artifactId>
             </rarModule>
             <ejbModule>
               <groupId>org.tomitribe</groupId>
-              <artifactId>telnet-connector-sample-ejb</artifactId>
+              <artifactId>crest-ssh-connector-sample-ejb</artifactId>
             </ejbModule>
           </modules>
         </configuration>
@@ -149,9 +150,19 @@ If you use Maven, you can achieve the above structure using the following in you
   </build>
 --------------------------------------------------------------------------------
 
-Standalone - Apache TomEE
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Standalone - Apache TomEE Plus
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Alternatively you can deploy the connector as a standalone .rar file, so any applications with +@Command+ methods
+on classes that implement +CrestListener+ can use the same instance of the connector.
 
-Standalone - Glassfish
-~~~~~~~~~~~~~~~~~~~~~~
+To do this, add +crest-ssh-connector-api-1.0.jar+ and +tomitribe-crest-0.3.jar+ to TomEE's lib folder. Then copy the +crest-ssh-connector-rar-1.0.rar to TomEE's +apps+ folder (you may need to create this if it does not exist). Edit +tomee.xml+ and ensure that the following configuration is present (it is commented out be default):
+
+----
+	<tomee>
+	  <Deployments dir="apps" />
+	  ... more configuration if needed ...
+	</tomee>
+----
+
+Add any users, passwords and roles required to the security realm. By default with TomEE, this can be done by editing the +conf/tomcat-users.xml+ file. A valid username and password combination is required to use the connector.
