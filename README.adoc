@@ -14,7 +14,7 @@ using Apache TomEE 1.7.0 and Glassfish 4.
 Features
 --------
 
-* SSH and Telnet support
+* SSH support
 * Provide custom commands via message driven beans using Crest
 * Help command shows all commands available along with syntax
 * Authentication using any realms available in the server
