@@ -156,7 +156,7 @@ Standalone - Apache TomEE Plus
 Alternatively you can deploy the connector as a standalone .rar file, so any applications with +@Command+ methods
 on classes that implement +CrestListener+ can use the same instance of the connector.
 
-To do this, add +crest-ssh-connector-api-1.0.jar+ and +tomitribe-crest-0.3.jar+ to TomEE's lib folder. Then copy the +crest-ssh-connector-rar-1.0.rar to TomEE's +apps+ folder (you may need to create this if it does not exist). Edit +tomee.xml+ and ensure that the following configuration is present (it is commented out be default):
+To do this, add +crest-ssh-connector-api-1.0.jar+ and +tomitribe-crest-0.3.jar+ to TomEE's +lib+ folder. Then copy the +crest-ssh-connector-rar-1.0.rar+ to TomEE's +apps+ folder (you may need to create this if it does not exist). Edit +tomee.xml+ and ensure that the following configuration is present (it is commented out be default):
 
 ----
 	<tomee>
