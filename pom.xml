@@ -26,7 +26,7 @@
 
   <artifactId>crest-connector-parent</artifactId>
   <packaging>pom</packaging>
-  <version>0.1-SNAPSHOT</version>
+  <version>1.0-SNAPSHOT</version>
   <name>Crest Connector</name>
 
   <scm>
