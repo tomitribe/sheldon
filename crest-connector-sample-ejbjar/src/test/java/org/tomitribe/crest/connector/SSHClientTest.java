@@ -46,8 +46,13 @@ public class SSHClientTest {
     @Deployment(testable = false)
     public static EnterpriseArchive createDeployment() {
 
-        File[] deps = Maven.resolver().resolve("org.tomitribe:tomitribe-util:1.0.0", "org.tomitribe:tomitribe-crest-api:1.0.0-SNAPSHOT").withTransitivity().asFile();
-        File[] rarDeps = Maven.resolver().resolve("org.apache.sshd:sshd-core:0.9.0", "jline:jline:2.11", "org.tomitribe:tomitribe-crest:1.0.0-SNAPSHOT", "org.tomitribe:tomitribe-util:1.0.0").withTransitivity().asFile();
+        final File[] deps = Maven.resolver().resolve("org.tomitribe:tomitribe-util:1.1.0",
+                "org.tomitribe:tomitribe-crest-api:0.3").withTransitivity().asFile();
+
+        final File[] rarDeps = Maven.resolver().resolve("org.apache.sshd:sshd-core:0.9.0",
+                "jline:jline:2.11",
+                "org.tomitribe:tomitribe-crest:0.3",
+                "org.tomitribe:tomitribe-util:1.1.0").withTransitivity().asFile();
         
         final JavaArchive apiJar = ShrinkWrap.create(JavaArchive.class, "api.jar");
         apiJar.addPackages(true, "org.tomitribe.crest.connector.api");
@@ -55,7 +60,15 @@ public class SSHClientTest {
         System.out.println();
         
         final JavaArchive rarLib = ShrinkWrap.create(JavaArchive.class, "lib.jar");
-        rarLib.addPackages(false, "org.tomitribe.crest.connector.cdi", "org.tomitribe.crest.connector.ssh", "org.tomitribe.crest.connector.adapter", "org.tomitribe.crest.connector.telnet", "org.tomitribe.crest.connector.util", "org.tomitribe.crest.connector.commands.factories", "org.tomitribe.crest.connector.authenticator", "org.tomitribe.crest.connector.commands");
+        rarLib.addPackages(false,
+                "org.tomitribe.crest.connector.cdi",
+                "org.tomitribe.crest.connector.ssh",
+                "org.tomitribe.crest.connector.adapter",
+                "org.tomitribe.crest.connector.telnet",
+                "org.tomitribe.crest.connector.util",
+                "org.tomitribe.crest.connector.commands.factories",
+                "org.tomitribe.crest.connector.authenticator",
+                "org.tomitribe.crest.connector.commands");
         
         System.out.println(rarLib.toString(true));
         System.out.println();
@@ -63,13 +76,13 @@ public class SSHClientTest {
         final ResourceAdapterArchive rar = ShrinkWrap.create(ResourceAdapterArchive.class, "test.rar");
         rar.addAsLibraries(rarLib).addAsLibraries(rarDeps);
 
-        ConnectorDescriptor raXml = Descriptors.create(ConnectorDescriptor.class);
-        ConfigProperty<Resourceadapter<ConnectorDescriptor>> sshPortProperty = raXml.getOrCreateResourceadapter().createConfigProperty();
+        final ConnectorDescriptor raXml = Descriptors.create(ConnectorDescriptor.class);
+        final ConfigProperty<Resourceadapter<ConnectorDescriptor>> sshPortProperty = raXml.getOrCreateResourceadapter().createConfigProperty();
         sshPortProperty.configPropertyName("sshPort");
         sshPortProperty.configPropertyType("int");
         sshPortProperty.configPropertyValue("2222");
 
-        ConfigProperty<Resourceadapter<ConnectorDescriptor>> telnetPortProperty = raXml.getOrCreateResourceadapter().createConfigProperty();
+        final ConfigProperty<Resourceadapter<ConnectorDescriptor>> telnetPortProperty = raXml.getOrCreateResourceadapter().createConfigProperty();
         telnetPortProperty.configPropertyName("telnetPort");
         telnetPortProperty.configPropertyType("int");
         telnetPortProperty.configPropertyValue("2020");
@@ -80,7 +93,6 @@ public class SSHClientTest {
 
         final JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "test.jar");
         jar.addPackages(true, "org.superbiz");
-//        jar.setManifest(new StringAsset("Class-Path: api.jar"));
         System.out.println(jar.toString(true));
         System.out.println();
 
