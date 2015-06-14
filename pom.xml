@@ -26,14 +26,24 @@
 
   <artifactId>crest-connector-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>0.1-SNAPSHOT</version>
   <name>Crest Connector</name>
+
+  <scm>
+    <connection>scm:git:git@github.com:tomitribe/crest-connector.git</connection>
+    <url>scm:git:git@github.com:tomitribe/crest-connector.git</url>
+    <developerConnection>scm:git:git@github.com:tomitribe/crest-connector.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <version.arquillian>1.1.1.Final</version.arquillian>
     <version.shrinkwrap.descriptor>2.0.0-alpha-5</version.shrinkwrap.descriptor>
     <version.shrinkwrap.shrinkwrap>1.0.1</version.shrinkwrap.shrinkwrap>
+    <version.tomee>1.7.2</version.tomee>
+    <version.openejb>4.7.2</version.openejb>
+    <version.crest>0.3</version.crest>
   </properties>
 
   <repositories>
@@ -51,18 +61,18 @@
       <dependency>
         <groupId>org.tomitribe</groupId>
         <artifactId>tomitribe-crest</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>${version.crest}</version>
       </dependency>
       <dependency>
         <groupId>org.tomitribe</groupId>
         <artifactId>tomitribe-crest-api</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>${version.crest}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.tomitribe</groupId>
         <artifactId>tomitribe-util</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.sshd</groupId>
@@ -157,7 +167,7 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <tomee.version>1.7.0</tomee.version>
+        <tomee.version>${version.tomee}</tomee.version>
         <tomee.classifier>plus</tomee.classifier>
       </properties>
       <build>
