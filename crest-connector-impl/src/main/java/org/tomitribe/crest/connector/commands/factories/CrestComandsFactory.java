@@ -21,7 +21,7 @@ import org.apache.sshd.common.Factory;
 import org.apache.sshd.server.Command;
 import org.tomitribe.crest.connector.adapter.SecurityHandler;
 import org.tomitribe.crest.connector.commands.CrestCommands;
-import org.tomitribe.crest.connector.telnet.ConsoleSession;
+import org.tomitribe.crest.connector.ssh.ConsoleSession;
 
 public class CrestComandsFactory implements Factory<Command> {
 

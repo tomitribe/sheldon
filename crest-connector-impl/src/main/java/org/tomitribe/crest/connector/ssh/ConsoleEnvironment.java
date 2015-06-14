@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tomitribe.crest.connector.telnet;
+package org.tomitribe.crest.connector.ssh;
+
+import org.tomitribe.crest.environments.Environment;
 
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Properties;
-
-import org.tomitribe.crest.environments.Environment;
 
 class ConsoleEnvironment implements Environment {
     private final PrintStream out;

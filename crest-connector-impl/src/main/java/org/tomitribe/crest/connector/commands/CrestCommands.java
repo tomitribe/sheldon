@@ -16,20 +16,20 @@
  */
 package org.tomitribe.crest.connector.commands;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import org.apache.sshd.server.Command;
 import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.ExitCallback;
 import org.apache.sshd.server.SessionAware;
 import org.apache.sshd.server.session.ServerSession;
 import org.tomitribe.crest.connector.adapter.SecurityHandler;
+import org.tomitribe.crest.connector.ssh.ConsoleSession;
 import org.tomitribe.crest.connector.ssh.SshdServer;
-import org.tomitribe.crest.connector.telnet.ConsoleSession;
-import org.tomitribe.crest.connector.telnet.StopException;
-import org.tomitribe.crest.connector.telnet.TtyCodes;
+import org.tomitribe.crest.connector.ssh.StopException;
+import org.tomitribe.crest.connector.ssh.TtyCodes;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class CrestCommands implements Command, Runnable, TtyCodes, SessionAware {
 
@@ -89,7 +89,7 @@ public class CrestCommands implements Command, Runnable, TtyCodes, SessionAware 
             @Override
             public void run() {
                 try {
-                    consoleSession.doSession(in, out, true);
+                    consoleSession.doSession(in, out);
                 } catch (StopException s) {
                     // exit normally
                 } catch (Throwable t) {

@@ -27,7 +27,6 @@ import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.tomitribe.crest.connector.adapter.SecurityHandler;
 import org.tomitribe.crest.connector.authenticator.PasswordAuthenticatorImpl;
 import org.tomitribe.crest.connector.commands.factories.CrestComandsFactory;
-import org.tomitribe.crest.connector.telnet.ConsoleSession;
 
 public class SshdServer {
 

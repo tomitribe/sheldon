@@ -25,7 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tomitribe.crest.Main;
 import org.tomitribe.crest.api.Command;
-import org.tomitribe.crest.connector.telnet.CommandCompleter;
+import org.tomitribe.crest.connector.ssh.CommandCompleter;
 
 import static org.junit.Assert.*;
 

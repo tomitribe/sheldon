@@ -14,10 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tomitribe.crest.connector.telnet;
+package org.tomitribe.crest.connector.ssh;
 
-import jline.Terminal;
-import jline.UnsupportedTerminal;
 import jline.console.ConsoleReader;
 import org.tomitribe.crest.Main;
 import org.tomitribe.crest.cmds.CommandFailedException;
@@ -43,7 +41,7 @@ public class ConsoleSession implements TtyCodes {
         this.prompt = prompt;
     }
 
-    public void doSession(final InputStream in, OutputStream out, boolean ssh) throws IOException {
+    public void doSession(final InputStream in, OutputStream out) throws IOException {
         FilterOutputStream fo = new FilterOutputStream(out) {
             @Override
             public void write(final int i) throws IOException {
@@ -56,8 +54,7 @@ public class ConsoleSession implements TtyCodes {
             }
         };
 
-        Terminal term = ssh ? null : new UnsupportedTerminal();
-        ConsoleReader reader = new ConsoleReader(in, fo, term);
+        ConsoleReader reader = new ConsoleReader(in, fo);
         reader.addCompleter(new CommandCompleter(main));
 
         reader.setPrompt(String.format("\u001B[33m%s\u001B[0m ", prompt));

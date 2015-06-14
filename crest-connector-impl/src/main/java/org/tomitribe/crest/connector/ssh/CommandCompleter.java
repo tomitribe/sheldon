@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.tomitribe.crest.connector.telnet;
+package org.tomitribe.crest.connector.ssh;
+
+import jline.console.completer.Completer;
+import org.tomitribe.crest.Main;
 
 import java.util.List;
 
-import org.tomitribe.crest.Main;
-
-import jline.console.completer.Completer;
 import static jline.internal.Preconditions.checkNotNull;
 
 /**

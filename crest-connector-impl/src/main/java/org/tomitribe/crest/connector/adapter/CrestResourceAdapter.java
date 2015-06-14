@@ -16,13 +16,15 @@
  */
 package org.tomitribe.crest.connector.adapter;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.tomitribe.crest.Main;
+import org.tomitribe.crest.cmds.Cmd;
+import org.tomitribe.crest.cmds.processors.Commands;
+import org.tomitribe.crest.cmds.targets.Target;
+import org.tomitribe.crest.connector.authenticator.AuthenticateWork;
+import org.tomitribe.crest.connector.authenticator.WorkSecurityContext;
+import org.tomitribe.crest.connector.ssh.SshdServer;
+import org.tomitribe.crest.connector.ssh.BuildIn;
+import org.tomitribe.crest.connector.ssh.ConsoleSession;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.ActivationSpec;
@@ -38,22 +40,16 @@ import javax.resource.spi.work.WorkException;
 import javax.resource.spi.work.WorkManager;
 import javax.transaction.xa.XAResource;
 import javax.validation.constraints.NotNull;
-
-import org.tomitribe.crest.Main;
-import org.tomitribe.crest.cmds.Cmd;
-import org.tomitribe.crest.cmds.processors.Commands;
-import org.tomitribe.crest.cmds.targets.Target;
-import org.tomitribe.crest.connector.authenticator.AuthenticateWork;
-import org.tomitribe.crest.connector.authenticator.WorkSecurityContext;
-import org.tomitribe.crest.connector.ssh.SshdServer;
-import org.tomitribe.crest.connector.telnet.BuildIn;
-import org.tomitribe.crest.connector.telnet.ConsoleSession;
-import org.tomitribe.crest.connector.telnet.TelnetServer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Connector(description = "Telnet ResourceAdapter", displayName = "Telnet ResourceAdapter", eisType = "Telnet Adapter", version = "1.0")
 public class CrestResourceAdapter implements ResourceAdapter, SecurityHandler {
 
-    private TelnetServer telnetServer;
     private SshdServer sshdServer;
 
     /**
@@ -66,9 +62,6 @@ public class CrestResourceAdapter implements ResourceAdapter, SecurityHandler {
     @ConfigProperty(defaultValue = "2222")
     private Integer sshPort;
 
-    @ConfigProperty(defaultValue = "2020")
-    private Integer telnetPort;
-
     private Main main;
     private ConsoleSession session;
 
@@ -78,14 +71,6 @@ public class CrestResourceAdapter implements ResourceAdapter, SecurityHandler {
 
     public void setSshPort(Integer sshPort) {
         this.sshPort = sshPort;
-    }
-
-    public Integer getTelnetPort() {
-        return telnetPort;
-    }
-
-    public void setTelnetPort(Integer telnetPort) {
-        this.telnetPort = telnetPort;
     }
 
     public String getPrompt() {
@@ -114,26 +99,10 @@ public class CrestResourceAdapter implements ResourceAdapter, SecurityHandler {
             sshdServer.start();
         }
 
-        if (telnetPort != null) {
-            telnetServer = new TelnetServer(session, telnetPort, this);
-            try {
-                telnetServer.start();
-            } catch (IOException e) {
-                throw new ResourceAdapterInternalException(e);
-            }
-        }
+
     }
 
     public void stop() {
-        try {
-            if (telnetServer != null) {
-                telnetServer.stop();
-            }
-        } catch (IOException e) {
-            // TODO log this... oh wait, no standard way to do that
-            e.printStackTrace();
-        }
-
         if (sshdServer != null) {
             sshdServer.stop();
         }
@@ -248,7 +217,6 @@ public class CrestResourceAdapter implements ResourceAdapter, SecurityHandler {
         int result = 1;
         result = prime * result + ((prompt == null) ? 0 : prompt.hashCode());
         result = prime * result + ((sshPort == null) ? 0 : sshPort.hashCode());
-        result = prime * result + ((telnetPort == null) ? 0 : telnetPort.hashCode());
         return result;
     }
 
@@ -270,11 +238,6 @@ public class CrestResourceAdapter implements ResourceAdapter, SecurityHandler {
             if (other.sshPort != null)
                 return false;
         } else if (!sshPort.equals(other.sshPort))
-            return false;
-        if (telnetPort == null) {
-            if (other.telnetPort != null)
-                return false;
-        } else if (!telnetPort.equals(other.telnetPort))
             return false;
         return true;
     }
