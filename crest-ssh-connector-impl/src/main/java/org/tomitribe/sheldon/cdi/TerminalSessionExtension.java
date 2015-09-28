@@ -14,23 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.superbiz;
+package org.tomitribe.sheldon.cdi;
 
-import javax.annotation.Resource;
-import javax.ejb.MessageDriven;
-import javax.ejb.MessageDrivenContext;
+import org.tomitribe.sheldon.api.TerminalSessionScoped;
 
-import org.tomitribe.crest.api.Command;
-import org.tomitribe.sheldon.api.CrestListener;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.BeforeBeanDiscovery;
+import javax.enterprise.inject.spi.Extension;
 
-@MessageDriven(name = "User")
-public class UserBean implements CrestListener {
 
-    @Resource
-    private MessageDrivenContext context;
-    
-    @Command
-    public String whoami() {
-        return context.getCallerPrincipal() == null ? "Unknown" : context.getCallerPrincipal().getName();
+public class TerminalSessionExtension implements Extension {
+
+    public void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd) {
+        bbd.addScope(TerminalSessionScoped.class, true, false);
+    }
+
+    public void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager bm) {
+        abd.addContext(new TerminalSessionContext(bm));
     }
 }

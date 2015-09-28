@@ -14,23 +14,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.superbiz;
+package org.tomitribe.sheldon.ssh;
 
-import javax.annotation.Resource;
-import javax.ejb.MessageDriven;
-import javax.ejb.MessageDrivenContext;
+import org.tomitribe.crest.environments.Environment;
 
-import org.tomitribe.crest.api.Command;
-import org.tomitribe.sheldon.api.CrestListener;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.util.Properties;
 
-@MessageDriven(name = "User")
-public class UserBean implements CrestListener {
+class ConsoleEnvironment implements Environment {
+    private final PrintStream out;
+    private final InputStream in;
 
-    @Resource
-    private MessageDrivenContext context;
-    
-    @Command
-    public String whoami() {
-        return context.getCallerPrincipal() == null ? "Unknown" : context.getCallerPrincipal().getName();
+    public ConsoleEnvironment(PrintStream out, InputStream in) {
+        this.out = out;
+        this.in = in;
+    }
+
+    @Override
+    public PrintStream getOutput() {
+        return out;
+    }
+
+    @Override
+    public PrintStream getError() {
+        return out;
+    }
+
+    @Override
+    public InputStream getInput() {
+        return in;
+    }
+
+    @Override
+    public Properties getProperties() {
+        return System.getProperties();
     }
 }

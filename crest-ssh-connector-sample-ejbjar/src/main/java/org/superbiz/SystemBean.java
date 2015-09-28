@@ -17,7 +17,7 @@
 package org.superbiz;
 
 import org.tomitribe.crest.api.Command;
-import org.tomitribe.crest.connector.api.CrestListener;
+import org.tomitribe.sheldon.api.CrestListener;
 import org.tomitribe.util.PrintString;
 
 import javax.ejb.MessageDriven;

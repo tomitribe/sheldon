@@ -19,7 +19,7 @@ package org.superbiz;
 import org.tomitribe.crest.api.Command;
 import org.tomitribe.crest.api.Default;
 import org.tomitribe.crest.api.Option;
-import org.tomitribe.crest.connector.api.CrestListener;
+import org.tomitribe.sheldon.api.CrestListener;
 import org.tomitribe.util.Size;
 import org.tomitribe.util.SizeUnit;
 

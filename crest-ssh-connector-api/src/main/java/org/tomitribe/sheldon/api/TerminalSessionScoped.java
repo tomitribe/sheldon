@@ -14,23 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.superbiz;
+package org.tomitribe.sheldon.api;
 
-import javax.annotation.Resource;
-import javax.ejb.MessageDriven;
-import javax.ejb.MessageDrivenContext;
+import javax.enterprise.context.NormalScope;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.tomitribe.crest.api.Command;
-import org.tomitribe.sheldon.api.CrestListener;
-
-@MessageDriven(name = "User")
-public class UserBean implements CrestListener {
-
-    @Resource
-    private MessageDrivenContext context;
-    
-    @Command
-    public String whoami() {
-        return context.getCallerPrincipal() == null ? "Unknown" : context.getCallerPrincipal().getName();
-    }
+@Documented
+@NormalScope
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
+public @interface TerminalSessionScoped {
 }

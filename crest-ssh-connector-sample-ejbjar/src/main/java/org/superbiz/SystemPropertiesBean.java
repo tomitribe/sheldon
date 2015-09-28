@@ -21,7 +21,7 @@ import java.io.File;
 import javax.ejb.MessageDriven;
 
 import org.tomitribe.crest.api.Command;
-import org.tomitribe.crest.connector.api.CrestListener;
+import org.tomitribe.sheldon.api.CrestListener;
 import org.tomitribe.crest.val.Directory;
 import org.tomitribe.crest.val.Exists;
 

@@ -14,23 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.superbiz;
+package org.tomitribe.sheldon.util;
 
-import javax.annotation.Resource;
-import javax.ejb.MessageDriven;
-import javax.ejb.MessageDrivenContext;
+import java.util.Locale;
 
-import org.tomitribe.crest.api.Command;
-import org.tomitribe.sheldon.api.CrestListener;
+public class Utils {
+    private static final boolean IS_WIN = System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("win");
 
-@MessageDriven(name = "User")
-public class UserBean implements CrestListener {
-
-    @Resource
-    private MessageDrivenContext context;
+    private Utils() {
+        // no-op
+    }
     
-    @Command
-    public String whoami() {
-        return context.getCallerPrincipal() == null ? "Unknown" : context.getCallerPrincipal().getName();
+    public static boolean isWin() {
+        return IS_WIN;
     }
 }
