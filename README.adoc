@@ -1,10 +1,10 @@
-Crest Connector
+Sheldon
 ================
 
 Overview
 --------
 
-The Crest connector provides an interactive shell environment that can be accessed via SSH.
+Sheldon provides an interactive shell environment that can be accessed via SSH.
 The commands available in the shell are provided by implementing message driven beans (MDBs) using Crest -
 a command line API styled after JAX-RS.
 
@@ -25,14 +25,14 @@ Features
 Demo
 ----
 
-image:https://raw.githubusercontent.com/tomitribe/crest-ssh-connector/master/terminal.gif[Demo]
+image:https://raw.githubusercontent.com/tomitribe/sheldon/master/terminal.gif[Demo]
 
 
 Creating commands
 -----------------
 
 Defining new commands for the connector is straightforward. Define a new MDB with the +@MessageDriven+ annotation.
-The MDB needs to implement the +org.tomitribe.crest.connector.api.CrestListener+ interface. This is simply a marker interface
+The MDB needs to implement the +org.tomitribe.sheldon.api.CrestListener+ interface. This is simply a marker interface
 with no methods. Each command can then be provided as a public method with a +@Command+ annotation, with any desired
 arguments, and any options annotated with +@Option+. Further Crest documentation is available here: https://github.com/tomitribe/crest/blob/master/README.adoc.
 
@@ -68,13 +68,13 @@ Reference the RAR in META-INF/application.xml:
 <?xml version="1.0" encoding="UTF-8"?>
 <application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_6.xsd" version="6">
   <description>Crest SSH Connector Example</description>
-  <display-name>crest-ssh-connector-sample-ear</display-name>
+  <display-name>sheldon-sample-ear</display-name>
   <initialize-in-order>true</initialize-in-order>
   <module>
-    <connector>crest-ssh-connector-rar-1.0.rar</connector>
+    <connector>sheldon-rar-0.8.rar</connector>
   </module>
   <module>
-    <ejb>crest-ssh-connector-sample-ejb-1.0.jar</ejb>
+    <ejb>sheldon-sample-ejb-0.8.jar</ejb>
   </module>
   <library-directory>lib</library-directory>
 </application>
@@ -87,8 +87,8 @@ test.ear:
 |---- lib
       |---- tomitribe-util-1.1.0.jar
       |---- tomitribe-crest-0.3.jar
-      |---- telnet-connector-api-1.0.jar
-|---- telnet-connector-rar-1.0.rar
+      |---- sheldon-api-0.8.jar
+|---- sheldon-rar-0.8.rar
 |---- <ejb-jar-with-mdb-commands>.jar
 |---- META-INF
       |---- application.xml
@@ -101,14 +101,14 @@ If you use Maven, you can achieve the above structure using the following in you
   <dependencies>
     <dependency>
       <groupId>org.tomitribe</groupId>
-      <artifactId>crest-ssh-connector-sample-ejb</artifactId>
-      <version>1.0</version>
+      <artifactId>sheldon-sample-ejb</artifactId>
+      <version>0.8</version>
       <type>ejb</type>
     </dependency>
     <dependency>
       <groupId>org.tomitribe</groupId>
-      <artifactId>crest-ssh-connector-rar</artifactId>
-      <version>1.0</version>
+      <artifactId>sheldon-rar</artifactId>
+      <version>0.8</version>
       <type>rar</type>
     </dependency>
     <dependency>
@@ -137,11 +137,11 @@ If you use Maven, you can achieve the above structure using the following in you
           <modules>
             <rarModule>
               <groupId>org.tomitribe</groupId>
-              <artifactId>crest-ssh-connector-rar</artifactId>
+              <artifactId>sheldon-rar</artifactId>
             </rarModule>
             <ejbModule>
               <groupId>org.tomitribe</groupId>
-              <artifactId>crest-ssh-connector-sample-ejb</artifactId>
+              <artifactId>sheldon-sample-ejb</artifactId>
             </ejbModule>
           </modules>
         </configuration>
@@ -156,7 +156,7 @@ Standalone - Apache TomEE Plus
 Alternatively you can deploy the connector as a standalone .rar file, so any applications with +@Command+ methods
 on classes that implement +CrestListener+ can use the same instance of the connector.
 
-To do this, add +crest-ssh-connector-api-1.0.jar+ and +tomitribe-crest-0.3.jar+ to TomEE's +lib+ folder. Then copy the +crest-ssh-connector-rar-1.0.rar+ to TomEE's +apps+ folder (you may need to create this if it does not exist). Edit +tomee.xml+ and ensure that the following configuration is present (it is commented out be default):
+To do this, add +sheldon-api-0.8.jar+ and +tomitribe-crest-0.3.jar+ to TomEE's +lib+ folder. Then copy the +sheldon-rar-0.8.rar+ to TomEE's +apps+ folder (you may need to create this if it does not exist). Edit +tomee.xml+ and ensure that the following configuration is present (it is commented out be default):
 
 ----
 	<tomee>
