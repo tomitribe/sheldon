@@ -25,18 +25,18 @@
 
   <parent>
     <groupId>org.tomitribe</groupId>
-    <artifactId>crest-ssh-connector-parent</artifactId>
+    <artifactId>sheldon-parent</artifactId>
     <version>1.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>crest-ssh-connector-rar</artifactId>
+  <artifactId>sheldon-rar</artifactId>
   <packaging>rar</packaging>
-  <name>Crest Connector :: Resource Adapter</name>
+  <name>Sheldon :: Resource Adapter</name>
 
   <dependencies>
     <dependency>
       <groupId>org.tomitribe</groupId>
-      <artifactId>crest-ssh-connector-impl</artifactId>
+      <artifactId>sheldon-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

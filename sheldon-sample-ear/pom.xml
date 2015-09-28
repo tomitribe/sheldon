@@ -25,24 +25,24 @@
 
   <parent>
     <groupId>org.tomitribe</groupId>
-    <artifactId>crest-ssh-connector-parent</artifactId>
+    <artifactId>sheldon-parent</artifactId>
     <version>1.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>crest-ssh-connector-sample-ear</artifactId>
+  <artifactId>sheldon-sample-ear</artifactId>
   <packaging>ear</packaging>
-  <name>Crest Connector :: Sample EAR</name>
+  <name>Sheldon :: Sample EAR</name>
 
   <dependencies>
     <dependency>
       <groupId>org.tomitribe</groupId>
-      <artifactId>crest-ssh-connector-sample-ejb</artifactId>
+      <artifactId>sheldon-sample-ejb</artifactId>
       <version>${project.version}</version>
       <type>ejb</type>
     </dependency>
     <dependency>
       <groupId>org.tomitribe</groupId>
-      <artifactId>crest-ssh-connector-rar</artifactId>
+      <artifactId>sheldon-rar</artifactId>
       <version>${project.version}</version>
       <type>rar</type>
     </dependency>
@@ -71,11 +71,11 @@
           <modules>
             <rarModule>
               <groupId>org.tomitribe</groupId>
-              <artifactId>crest-ssh-connector-rar</artifactId>
+              <artifactId>sheldon-rar</artifactId>
             </rarModule>
             <ejbModule>
               <groupId>org.tomitribe</groupId>
-              <artifactId>crest-ssh-connector-sample-ejb</artifactId>
+              <artifactId>sheldon-sample-ejb</artifactId>
             </ejbModule>
           </modules>
         </configuration>

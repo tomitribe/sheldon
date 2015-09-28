@@ -25,13 +25,13 @@
 
   <parent>
     <groupId>org.tomitribe</groupId>
-    <artifactId>crest-ssh-connector-parent</artifactId>
+    <artifactId>sheldon-parent</artifactId>
     <version>1.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>crest-ssh-connector-api</artifactId>
+  <artifactId>sheldon-api</artifactId>
   <packaging>jar</packaging>
-  <name>Crest Connector :: API</name>
+  <name>Sheldon :: API</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

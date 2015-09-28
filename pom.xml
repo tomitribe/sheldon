@@ -23,15 +23,15 @@
     <version>2</version>
   </parent>
 
-  <artifactId>crest-ssh-connector-parent</artifactId>
+  <artifactId>sheldon-parent</artifactId>
   <packaging>pom</packaging>
   <version>1.1-SNAPSHOT</version>
-  <name>Crest Connector</name>
+  <name>Sheldon</name>
 
   <scm>
-    <connection>scm:git:git@github.com:tomitribe/crest-ssh-connector.git</connection>
-    <url>scm:git:git@github.com:tomitribe/crest-ssh-connector.git</url>
-    <developerConnection>scm:git:git@github.com:tomitribe/crest-ssh-connector.git</developerConnection>
+    <connection>scm:git:git@github.com:tomitribe/sheldon.git</connection>
+    <url>scm:git:git@github.com:tomitribe/sheldon.git</url>
+    <developerConnection>scm:git:git@github.com:tomitribe/sheldon.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
@@ -98,11 +98,11 @@
     </dependencies>
   </dependencyManagement>
   <modules>
-    <module>crest-ssh-connector-api</module>
-    <module>crest-ssh-connector-impl</module>
-    <module>crest-ssh-connector-rar</module>
-    <module>crest-ssh-connector-sample-ejbjar</module>
-    <module>crest-ssh-connector-sample-ear</module>
+    <module>sheldon-api</module>
+    <module>sheldon-impl</module>
+    <module>sheldon-rar</module>
+    <module>sheldon-sample-ejbjar</module>
+    <module>sheldon-sample-ear</module>
   </modules>
   <build>
     <defaultGoal>install</defaultGoal>
