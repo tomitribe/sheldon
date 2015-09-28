@@ -39,7 +39,8 @@ arguments, and any options annotated with +@Option+. Further Crest documentation
 Here's a simple example that provides a "freeMemory" command. This returns the free memory in the JVM - in MB by
 default.
 
---------------------------------------------------------------------------------
+[source,java]
+----
 @MessageDriven(name = "Runtime")
 public class RuntimeBean implements TelnetListener {
 
@@ -51,7 +52,7 @@ public class RuntimeBean implements TelnetListener {
     }
 
 }
---------------------------------------------------------------------------------
+----
 
 Deploying
 ---------
