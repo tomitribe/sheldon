@@ -1,5 +1,5 @@
-Sheldon
-=======
+= Sheldon
+:showtitle:
 
 Overview
 --------
