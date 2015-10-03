@@ -77,4 +77,82 @@ public class ArgumentsParserTest {
         assertArguments("\"one two\"", "one two");
         assertArguments("\"one\\ two\"", "one\\ two");
     }
+
+    /**
+     * In bash, quotes do not split words. Quotes affect escaping only.
+     *
+     * The following all result in one argument as far as bash is concerned
+     */
+    @Test
+    @Ignore
+    public void quoteRemoval() {
+        assertArguments("\"one\"two", "onetwo");
+        assertArguments("'one'two", "onetwo");
+        assertArguments("one''two", "onetwo");
+        assertArguments("one'  '\\ two", "one   two");
+        assertArguments("one\\''  '\\ two", "one'   two");
+        assertArguments("\"one\"\"two\"", "onetwo");
+        assertArguments("\"one\"\\ \"two\"", "one two");
+        assertArguments("\"one\"'two'", "onetwo");
+        assertArguments("\"one\"\"  \"'two'", "one  two");
+        assertArguments("one'two'", "onetwo");
+    }
+
+    @Test
+    public void nestedUnterminatedQuoting() {
+        assertArguments("\"one' two\"", "one' two");
+        assertArguments("'one\" two'", "one\" two");
+    }
+
+    /**
+     * An escape followed by a newline in bash continues the argument on the next line
+     *
+     * If the next line does not start with whitespace it will result in one argument
+     *
+     * If the next line does start with whitespace it will result in two arguments
+     */
+    @Test
+    @Ignore
+    public void escapeNewline() {
+        assertArguments("one\\\ntwo   three", "onetwo", "three");
+        assertArguments("one\\\n two   three", "one", "two", "three");
+    }
+
+    /**
+     * Escapes inside single quotes are preserved and not honored
+     */
+    @Test
+    @Ignore
+    public void escapeInSingleQuotes() {
+        assertArguments("'one\\ two'   three", "one\\ two", "three");
+        assertArguments("'one\\two'   three", "one\\two", "three");
+        assertArguments("'one\\\ttwo'   three", "one\\\ttwo", "three");
+    }
+
+    /**
+     * Pipes inside single quotes are preserved and not honored
+     */
+    @Test
+    @Ignore
+    public void pipeInSingleQuotes() {
+        assertArguments("'one|two'   three", "one|two", "three");
+    }
+
+    /**
+     * Escapes inside double quotes are preserved and not honored
+     */
+    @Test
+    @Ignore
+    public void escapeInDoubleQuotes() {
+        assertArguments("\"one\\two\"   three", "one\\two", "three");
+    }
+
+    /**
+     * Pipes inside double quotes are preserved and not honored
+     */
+    @Test
+    @Ignore
+    public void pipeInDoubleQuotes() {
+        assertArguments("\"one|two\"   three", "one|two", "three");
+    }
 }
