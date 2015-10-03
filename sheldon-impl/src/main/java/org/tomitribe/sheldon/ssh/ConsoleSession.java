@@ -82,7 +82,7 @@ public class ConsoleSession implements TtyCodes {
     }
 
     private void handleUserInput(String commandline, InputStream in, OutputStream out) {
-        final String[] args = commandline.split(" +");
+        final String[] args = ArgumentsParser.parse(commandline)[0].get();
         PrintStream ps = new PrintStream(out);
 
         try {

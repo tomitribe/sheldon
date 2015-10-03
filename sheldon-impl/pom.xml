@@ -77,5 +77,11 @@
       <version>${version.openejb}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.sun.codemodel</groupId>
+      <artifactId>codemodel</artifactId>
+      <version>2.6</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
