@@ -1,5 +1,5 @@
-Sheldon
-================
+= Sheldon
+:showtitle:
 
 Overview
 --------
@@ -39,7 +39,8 @@ arguments, and any options annotated with +@Option+. Further Crest documentation
 Here's a simple example that provides a "freeMemory" command. This returns the free memory in the JVM - in MB by
 default.
 
---------------------------------------------------------------------------------
+[source,java]
+----
 @MessageDriven(name = "Runtime")
 public class RuntimeBean implements TelnetListener {
 
@@ -51,7 +52,7 @@ public class RuntimeBean implements TelnetListener {
     }
 
 }
---------------------------------------------------------------------------------
+----
 
 Deploying
 ---------
@@ -64,7 +65,8 @@ along with your MDBs packaged up in an EJB jar.
 
 Reference the RAR in META-INF/application.xml:
 
---------------------------------------------------------------------------------
+[source,xml]
+----
 <?xml version="1.0" encoding="UTF-8"?>
 <application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_6.xsd" version="6">
   <description>Crest SSH Connector Example</description>
@@ -78,11 +80,12 @@ Reference the RAR in META-INF/application.xml:
   </module>
   <library-directory>lib</library-directory>
 </application>
---------------------------------------------------------------------------------
+----
 
 The target structure for the EAR should look like this:
 
---------------------------------------------------------------------------------
+[listing]
+----
 test.ear:
 |---- lib
       |---- tomitribe-util-1.1.0.jar
@@ -92,12 +95,12 @@ test.ear:
 |---- <ejb-jar-with-mdb-commands>.jar
 |---- META-INF
       |---- application.xml
-
---------------------------------------------------------------------------------
+----
 
 If you use Maven, you can achieve the above structure using the following in your POM:
 
---------------------------------------------------------------------------------
+[source,xml]
+----
   <dependencies>
     <dependency>
       <groupId>org.tomitribe</groupId>
@@ -148,7 +151,7 @@ If you use Maven, you can achieve the above structure using the following in you
       </plugin>
     </plugins>
   </build>
---------------------------------------------------------------------------------
+----
 
 Standalone - Apache TomEE Plus
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -158,11 +161,12 @@ on classes that implement +CrestListener+ can use the same instance of the conne
 
 To do this, add +sheldon-api-0.8.jar+ and +tomitribe-crest-0.3.jar+ to TomEE's +lib+ folder. Then copy the +sheldon-rar-0.8.rar+ to TomEE's +apps+ folder (you may need to create this if it does not exist). Edit +tomee.xml+ and ensure that the following configuration is present (it is commented out be default):
 
+[listing]
 ----
-	<tomee>
-	  <Deployments dir="apps" />
-	  ... more configuration if needed ...
-	</tomee>
+<tomee>
+  <Deployments dir="apps" />
+  ... more configuration if needed ...
+</tomee>
 ----
 
 Add any users, passwords and roles required to the security realm. By default with TomEE, this can be done by editing the +conf/tomcat-users.xml+ file. A valid username and password combination is required to use the connector.
