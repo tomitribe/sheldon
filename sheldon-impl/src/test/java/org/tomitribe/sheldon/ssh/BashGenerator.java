@@ -63,8 +63,10 @@ public class BashGenerator {
         final BashGenerator bashGenerator = new BashGenerator(new File("/tmp/fun"));
 //        bashGenerator.generateAsserts();
         int i = 0;
-        bashGenerator.generate("", i++, "\"one' two\"");
-        bashGenerator.generate("", i++, "'one\" two'");
+        bashGenerator.generate("test", i++, "\"\" '' \"\"'' ''\"\" ");
+        bashGenerator.generate("test", i++, "\"\" '' \"\"a'' ''\"\" ");
+        bashGenerator.generate("test", i++, "\"\" '' a\"\"'' ''\"\" ");
+        bashGenerator.generate("test", i++, "\"\" '' \"\"''a ''\"\" ");
     }
 
     public void generate(final String prefix, int i, final String argumentline) throws IOException, InterruptedException, ClassNotFoundException {

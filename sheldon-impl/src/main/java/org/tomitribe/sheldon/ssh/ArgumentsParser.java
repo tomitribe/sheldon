@@ -16,81 +16,175 @@
  */
 package org.tomitribe.sheldon.ssh;
 
+import org.tomitribe.util.IO;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ArgumentsParser {
 
-    private ArgumentsParser() {
+    private static final char EOF = (char) -1;
+    final List<Arguments> commands = new ArrayList<>();
+    final List<String> result = new ArrayList<>();
+    final InputStream input;
+
+    StringBuilder arg;
+    State state = this::continueBare;
+
+    public ArgumentsParser(final String input) {
+        this(IO.read(input));
+    }
+
+    public ArgumentsParser(final InputStream input) {
+        this.input = input;
     }
 
     public static Arguments[] parse(final String line) {
-
-        if (line == null || line.length() == 0) {
-            throw new IllegalArgumentException("Empty command.");
-        }
-
-        final List<Arguments> commands = new ArrayList<>();
-        final List<String> result = new ArrayList<>();
-        final StringBuilder current = new StringBuilder();
-
-        char waitChar = ' ';
-        boolean copyNextChar = false;
-        boolean inEscaped = false;
-        for (final char c : line.toCharArray()) {
-            if (copyNextChar) {
-                current.append(c);
-                copyNextChar = false;
-            } else if (waitChar == c) {
-                if (current.length() > 0) {
-                    result.add(current.toString());
-                    current.setLength(0);
-                }
-                waitChar = ' ';
-                inEscaped = false;
-            } else {
-                switch (c) {
-                    case '"':
-                    case '\'':
-                        if (!inEscaped) {
-                            waitChar = c;
-                            inEscaped = true;
-                            break;
-                        } else {
-                            current.append(c);
-                        }
-
-                    case '\\':
-                        copyNextChar = true;
-                        break;
-
-                    case '|':
-                        flush(commands, result, current);
-                        break;
-
-                    default:
-                        current.append(c);
-                }
-            }
-        }
-
-        if (waitChar != ' ') {
-            throw new IllegalStateException("Missing closing " + Character.toString(waitChar));
-        }
-
-        flush(commands, result, current);
-        return commands.toArray(new Arguments[commands.size()]);
+        final ArgumentsParser parser = new ArgumentsParser(line);
+        return parser.parseArgs();
     }
 
-    private static void flush(final List<Arguments> commands, final List<String> result, final StringBuilder current) {
-        if (current.length() > 0) {
-            result.add(current.toString());
-            current.setLength(0);
+    public Arguments[] parseArgs() {
+
+        char c = EOF;
+
+        while ((c = state.read()) != EOF) {
+            if (arg == null) arg = new StringBuilder();
+            arg.append(c);
         }
+
+        if (arg != null) {
+            result.add(arg.toString());
+            arg.setLength(0);
+        }
+
         if (!result.isEmpty()) {
             commands.add(new Arguments(result.toArray(new String[result.size()])));
             result.clear();
         }
+        return commands.toArray(new Arguments[commands.size()]);
     }
 
+    private char continueBare() {
+
+        final char read = read();
+
+        // Skip passed any white space
+        if (isSeparator(read)) {
+
+            // If we were reading an arg, close it
+            if (arg != null) {
+                result.add(arg.toString());
+                arg = null;
+            }
+
+            return continueBare();
+        }
+
+        // We've found something not whitespace
+        if (read != EOF && arg == null) {
+            arg = new StringBuilder();
+        }
+
+        if ('\'' == read) return next(this::inSingleQuotes);
+        if ('\"' == read) return next(this::inDoubleQuotes);
+        if ('\\' == read) return next(this::escape);
+
+        return read;
+    }
+
+    private boolean isSeparator(char read) {
+        switch (read){
+            case ' ':
+            case '\t':
+                return true;
+        }
+        return false;
+    }
+
+    private char inSingleQuotes() {
+        final char read = read();
+        if ('\'' == read) return next(this::continueBare);
+        return read;
+    }
+
+    private char inDoubleQuotes() {
+        final char read = read();
+        if ('\"' == read) return next(this::continueBare);
+        if ('\\' == read) return next(this::escapeInDoubleQuotes);
+        return read;
+    }
+
+    private char escape() {
+        return use(read(), this::continueBare);
+    }
+
+    private char escapeInDoubleQuotes() {
+        final char read = read();
+        switch (read) {
+            case '\"':
+            case '$':
+            case '\\':
+            case '`':
+                return use(read, this::inDoubleQuotes);
+        }
+
+        return next(flush()
+                .state(this::backslash)
+                .state(() -> read)
+                .state(this::inDoubleQuotes)
+                .states());
+    }
+
+    private char next(final State state) {
+        this.state = state;
+        return state.read();
+    }
+
+    private char use(char current, final State next) {
+        this.state = next;
+        return current;
+    }
+
+    private char read() {
+        try {
+            return (char) input.read();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public Seq flush() {
+        return new Seq();
+    }
+
+    public class Seq {
+        private final List<State> states = new LinkedList<>();
+
+        public Seq state(State next) {
+            states.add(next);
+            return this;
+        }
+
+        public State states() {
+            final Iterator<State> iterator = states.iterator();
+            return () -> {
+                final State next = iterator.next();
+                if (iterator.hasNext()) return next.read();
+                return next(next);
+            };
+        }
+    }
+
+    public interface State {
+        char read();
+    }
+
+    private char backslash() {
+        return '\\';
+    }
 }

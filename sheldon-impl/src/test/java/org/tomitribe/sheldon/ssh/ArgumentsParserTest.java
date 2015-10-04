@@ -39,17 +39,14 @@ public class ArgumentsParserTest {
     }
 
     @Test
-    public void quotes() {
-        assertArguments("a \"b\" c \"1234,76\" \\\\ \"sentence\\ \\\\\\\" chkdwc\"", "a", "b", "c", "1234,76", "\\", "sentence \\\" chkdwc");
+    public void mixed() {
+        assertArguments("\"\\\\' chkdwc\"", "\\' chkdwc");
+        assertArguments("a 'b' c '1234,76' \\\\ \"sentence\\ \\\\' chkdwc\"", "a", "b", "c", "1234,76", "\\", "sentence\\ \\' chkdwc");
+        assertArguments("a \"b\" c \"1234,76\" \\\\ \"sentence\\ \\\\\\\" chkdwc\"", "a", "b", "c", "1234,76", "\\", "sentence\\ \\\" chkdwc");
     }
 
     @Test
-    public void singleQuote() {
-        assertArguments("a 'b' c '1234,76' \\\\ \"sentence\\ \\\\' chkdwc\"", "a", "b", "c", "1234,76", "\\", "sentence \\' chkdwc");
-        assertArguments("a 'b' c '1234,76' \\\\ 'sentence\\ \\\\\\' chkdwc'", "a", "b", "c", "1234,76", "\\", "sentence \\' chkdwc");
-    }
-
-    @Test
+    @Ignore
     public void piping() {
         {
             final Arguments[] args = parse("a|b");
@@ -70,7 +67,6 @@ public class ArgumentsParserTest {
      * An '\' in quotes should be treated as a plain '\' character
      */
     @Test
-    @Ignore
     public void escapesInQuotes() {
         assertArguments("one two", "one", "two");
         assertArguments("one\\ two", "one two");
@@ -84,7 +80,6 @@ public class ArgumentsParserTest {
      * The following all result in one argument as far as bash is concerned
      */
     @Test
-    @Ignore
     public void quoteRemoval() {
         assertArguments("\"one\"two", "onetwo");
         assertArguments("'one'two", "onetwo");
@@ -122,11 +117,47 @@ public class ArgumentsParserTest {
      * Escapes inside single quotes are preserved and not honored
      */
     @Test
-    @Ignore
     public void escapeInSingleQuotes() {
         assertArguments("'one\\ two'   three", "one\\ two", "three");
         assertArguments("'one\\two'   three", "one\\two", "three");
         assertArguments("'one\\\ttwo'   three", "one\\\ttwo", "three");
+    }
+
+    /**
+     * Skip all leading and trailing whitespace
+     */
+    @Test
+    public void skipWhiteSpace() {
+        assertArguments(" one ", "one");
+        assertArguments(" one two  three   ", "one", "two", "three");
+        assertArguments(" one\ttwo  three   ", "one", "two", "three");
+        assertArguments("\tone\ttwo  three\t", "one", "two", "three");
+        assertArguments("\t  \tone\ttwo  three\t ", "one", "two", "three");
+    }
+
+    /**
+     * In Bash, double quotes or single quotes together result in an empty, non null, string of zero length
+     *
+     * This is useful for explicitly setting a value to empty
+     *
+     * Multiple series of single or double quotes still result in one string of zero length
+     */
+    @Test
+    public void emptyArg() {
+        assertArguments("\"\" \"\" \"\" ", "", "", "");
+        assertArguments("\"\" \"\" \"\"\"\" ", "", "", "");
+        assertArguments("\"\" \"\"two \"\"\"\" ", "", "two", "");
+        assertArguments("\"\" two\"\" \"\"\"\" ", "", "two", "");
+        assertArguments("\"\" \"\"two\"\" \"\"\"\" ", "", "two", "");
+        assertArguments("'' '' '' ", "", "", "");
+        assertArguments("'' '' '''' ", "", "", "");
+        assertArguments("'' ''a '' ", "", "a", "");
+        assertArguments("'' a'' '' ", "", "a", "");
+        assertArguments("'' ''a'' '' ", "", "a", "");
+        assertArguments("\"\" '' \"\"'' ''\"\" ", "", "", "", "");
+        assertArguments("\"\" '' \"\"a'' ''\"\" ", "", "", "a", "");
+        assertArguments("\"\" '' a\"\"'' ''\"\" ", "", "", "a", "");
+        assertArguments("\"\" '' \"\"''a ''\"\" ", "", "", "a", "");
     }
 
     /**
@@ -140,11 +171,14 @@ public class ArgumentsParserTest {
 
     /**
      * Escapes inside double quotes are preserved and not honored
+     * Unless they are $, ", \
      */
     @Test
-    @Ignore
     public void escapeInDoubleQuotes() {
         assertArguments("\"one\\two\"   three", "one\\two", "three");
+        assertArguments("\"one\\$two\"   three", "one$two", "three");
+        assertArguments("\"one\\\"two\"   three", "one\"two", "three");
+        assertArguments("\"one\\`two\"   three", "one`two", "three");
     }
 
     /**
