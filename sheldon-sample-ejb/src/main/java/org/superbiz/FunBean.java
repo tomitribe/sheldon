@@ -19,7 +19,7 @@ package org.superbiz;
 
 import org.tomitribe.crest.api.Command;
 import org.tomitribe.crest.api.Option;
-import org.tomitribe.sheldon.api.CrestListener;
+import org.tomitribe.sheldon.api.CommandListener;
 
 import javax.ejb.MessageDriven;
 
@@ -28,7 +28,7 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 
 @MessageDriven(name = "Fun")
-public class FunBean implements CrestListener {
+public class FunBean implements CommandListener {
 
     private final Properties properties = new Properties();
 

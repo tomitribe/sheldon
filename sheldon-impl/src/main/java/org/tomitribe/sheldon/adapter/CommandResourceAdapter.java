@@ -47,8 +47,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Connector(description = "Telnet ResourceAdapter", displayName = "Telnet ResourceAdapter", eisType = "Telnet Adapter", version = "1.0")
-public class CrestResourceAdapter implements ResourceAdapter, SecurityHandler {
+@Connector(description = "SSH ResourceAdapter", displayName = "SSH ResourceAdapter", eisType = "SSH Adapter", version = "1.0")
+public class CommandResourceAdapter implements ResourceAdapter, SecurityHandler {
 
     private SshdServer sshdServer;
 
@@ -111,7 +111,7 @@ public class CrestResourceAdapter implements ResourceAdapter, SecurityHandler {
     public void endpointActivation(final MessageEndpointFactory messageEndpointFactory, final ActivationSpec activationSpec)
             throws ResourceException
     {
-        final CrestActivationSpec telnetActivationSpec = (CrestActivationSpec) activationSpec;
+        final CommandActivationSpec telnetActivationSpec = (CommandActivationSpec) activationSpec;
 
         workManager.scheduleWork(new Work() {
 
@@ -145,7 +145,7 @@ public class CrestResourceAdapter implements ResourceAdapter, SecurityHandler {
     }
 
     public void endpointDeactivation(MessageEndpointFactory messageEndpointFactory, ActivationSpec activationSpec) {
-        final CrestActivationSpec telnetActivationSpec = (CrestActivationSpec) activationSpec;
+        final CommandActivationSpec telnetActivationSpec = (CommandActivationSpec) activationSpec;
 
         final EndpointTarget endpointTarget = targets.get(telnetActivationSpec);
         if (endpointTarget == null) {
@@ -164,7 +164,7 @@ public class CrestResourceAdapter implements ResourceAdapter, SecurityHandler {
         return new XAResource[0];
     }
 
-    final Map<CrestActivationSpec, EndpointTarget> targets = new ConcurrentHashMap<CrestActivationSpec, EndpointTarget>();
+    final Map<CommandActivationSpec, EndpointTarget> targets = new ConcurrentHashMap<CommandActivationSpec, EndpointTarget>();
     private WorkManager workManager;
 
     @Override
@@ -228,7 +228,7 @@ public class CrestResourceAdapter implements ResourceAdapter, SecurityHandler {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        CrestResourceAdapter other = (CrestResourceAdapter) obj;
+        CommandResourceAdapter other = (CommandResourceAdapter) obj;
         if (prompt == null) {
             if (other.prompt != null)
                 return false;

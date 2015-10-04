@@ -48,20 +48,20 @@ public class Runner {
                 "org.tomitribe:tomitribe-util:1.1.0").withTransitivity().asFile();
 
         final JavaArchive apiJar = ShrinkWrap.create(JavaArchive.class, "api.jar");
-        apiJar.addPackages(true, "org.tomitribe.crest.connector.api");
+        apiJar.addPackages(true, "org.tomitribe.sheldon.api");
         System.out.println(apiJar.toString(true));
         System.out.println();
 
         final JavaArchive rarLib = ShrinkWrap.create(JavaArchive.class, "lib.jar");
         rarLib.addPackages(false,
-                "org.tomitribe.crest.connector.cdi",
-                "org.tomitribe.crest.connector.ssh",
-                "org.tomitribe.crest.connector.adapter",
-                "org.tomitribe.crest.connector.telnet",
-                "org.tomitribe.crest.connector.util",
-                "org.tomitribe.crest.connector.commands.factories",
-                "org.tomitribe.crest.connector.authenticator",
-                "org.tomitribe.crest.connector.commands");
+                "org.tomitribe.sheldon.cdi",
+                "org.tomitribe.sheldon.ssh",
+                "org.tomitribe.sheldon.adapter",
+                "org.tomitribe.sheldon.telnet",
+                "org.tomitribe.sheldon.util",
+                "org.tomitribe.sheldon.commands.factories",
+                "org.tomitribe.sheldon.authenticator",
+                "org.tomitribe.sheldon.commands");
 
         System.out.println(rarLib.toString(true));
         System.out.println();

@@ -17,7 +17,7 @@
 package org.tomitribe.sheldon.adapter;
 
 import org.tomitribe.crest.cmds.Cmd;
-import org.tomitribe.sheldon.api.CrestListener;
+import org.tomitribe.sheldon.api.CommandListener;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.Activation;
@@ -28,8 +28,8 @@ import javax.resource.spi.ResourceAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-@Activation(messageListeners = CrestListener.class)
-public class CrestActivationSpec implements ActivationSpec {
+@Activation(messageListeners = CommandListener.class)
+public class CommandActivationSpec implements ActivationSpec {
 
     private ResourceAdapter resourceAdapter;
     private Class beanClass;

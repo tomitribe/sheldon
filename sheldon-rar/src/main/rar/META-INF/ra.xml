@@ -27,7 +27,7 @@
 		<license-required>false</license-required>
 	</license>
 	<resourceadapter>
-		<resourceadapter-class>org.tomitribe.sheldon.adapter.CrestResourceAdapter</resourceadapter-class>
+		<resourceadapter-class>org.tomitribe.sheldon.adapter.CommandResourceAdapter</resourceadapter-class>
 		<config-property>
 			<config-property-name>sshPort</config-property-name>
 			<config-property-type>java.lang.Integer</config-property-type>
@@ -41,9 +41,9 @@
 		<inbound-resourceadapter>
 			<messageadapter>
 				<messagelistener>
-					<messagelistener-type>org.tomitribe.crest.connector.api.CrestListener</messagelistener-type>
+					<messagelistener-type>org.tomitribe.crest.connector.api.CommandListener</messagelistener-type>
 					<activationspec>
-						<activationspec-class>org.tomitribe.sheldon.adapter.CrestActivationSpec</activationspec-class>
+						<activationspec-class>org.tomitribe.sheldon.adapter.CommandActivationSpec</activationspec-class>
 					</activationspec>
 				</messagelistener>
 			</messageadapter>

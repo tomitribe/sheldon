@@ -19,5 +19,5 @@ package org.tomitribe.sheldon.api;
 /**
  * @version $Revision$ $Date$
  */
-public interface CrestListener {
+public interface CommandListener {
 }

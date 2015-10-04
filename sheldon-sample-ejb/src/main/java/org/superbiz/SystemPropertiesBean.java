@@ -21,12 +21,12 @@ import java.io.File;
 import javax.ejb.MessageDriven;
 
 import org.tomitribe.crest.api.Command;
-import org.tomitribe.sheldon.api.CrestListener;
+import org.tomitribe.sheldon.api.CommandListener;
 import org.tomitribe.crest.val.Directory;
 import org.tomitribe.crest.val.Exists;
 
 @MessageDriven(name = "SystemProperties")
-public class SystemPropertiesBean implements CrestListener {
+public class SystemPropertiesBean implements CommandListener {
 
     @Command
     public String home() {

@@ -19,14 +19,14 @@ package org.superbiz;
 import org.tomitribe.crest.api.Command;
 import org.tomitribe.crest.api.Default;
 import org.tomitribe.crest.api.Option;
-import org.tomitribe.sheldon.api.CrestListener;
+import org.tomitribe.sheldon.api.CommandListener;
 import org.tomitribe.util.Size;
 import org.tomitribe.util.SizeUnit;
 
 import javax.ejb.MessageDriven;
 
 @MessageDriven(name = "Runtime")
-public class RuntimeBean implements CrestListener {
+public class RuntimeBean implements CommandListener {
 
     @Command
     public int processors() {
