@@ -43,6 +43,7 @@
     <version.tomee>1.7.2</version.tomee>
     <version.openejb>4.7.2</version.openejb>
     <version.crest>0.3</version.crest>
+    <maven.checkstyle.plugin.version>2.16</maven.checkstyle.plugin.version>
   </properties>
 
   <repositories>
@@ -157,6 +158,17 @@
 
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <optimize>true</optimize>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 
   <profiles>
