@@ -43,6 +43,7 @@
     <version.tomee>1.7.2</version.tomee>
     <version.openejb>4.7.2</version.openejb>
     <version.crest>0.3</version.crest>
+    <maven.checkstyle.plugin.version>2.16</maven.checkstyle.plugin.version>
   </properties>
 
   <repositories>

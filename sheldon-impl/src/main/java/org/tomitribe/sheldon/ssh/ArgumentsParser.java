@@ -112,8 +112,9 @@ public class ArgumentsParser {
             case ' ':
             case '\t':
                 return true;
+            default:
+                return false;
         }
-        return false;
     }
 
     private char inSingleQuotes() {
@@ -141,6 +142,7 @@ public class ArgumentsParser {
             case '\\':
             case '`':
                 return use(read, this::inDoubleQuotes);
+            default:
         }
 
         return next(flush()
