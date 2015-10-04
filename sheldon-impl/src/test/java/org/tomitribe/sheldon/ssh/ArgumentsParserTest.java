@@ -46,7 +46,6 @@ public class ArgumentsParserTest {
     }
 
     @Test
-    @Ignore
     public void piping() {
         {
             final Arguments[] args = parse("a|b");
@@ -164,7 +163,6 @@ public class ArgumentsParserTest {
      * Pipes inside single quotes are preserved and not honored
      */
     @Test
-    @Ignore
     public void pipeInSingleQuotes() {
         assertArguments("'one|two'   three", "one|two", "three");
     }
@@ -185,7 +183,6 @@ public class ArgumentsParserTest {
      * Pipes inside double quotes are preserved and not honored
      */
     @Test
-    @Ignore
     public void pipeInDoubleQuotes() {
         assertArguments("\"one|two\"   three", "one|two", "three");
     }

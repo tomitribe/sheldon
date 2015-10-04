@@ -57,6 +57,12 @@ public class ArgumentsParser {
             arg.append(c);
         }
 
+        endCommand();
+
+        return commands.toArray(new Arguments[commands.size()]);
+    }
+
+    public void endCommand() {
         if (arg != null) {
             result.add(arg.toString());
             arg.setLength(0);
@@ -66,7 +72,6 @@ public class ArgumentsParser {
             commands.add(new Arguments(result.toArray(new String[result.size()])));
             result.clear();
         }
-        return commands.toArray(new Arguments[commands.size()]);
     }
 
     private char continueBare() {
@@ -85,8 +90,13 @@ public class ArgumentsParser {
             return continueBare();
         }
 
+        if ('|' == read) {
+            endCommand();
+            return continueBare();
+        }
+
         // We've found something not whitespace
-        if (read != EOF && arg == null) {
+        if (EOF != read && arg == null) {
             arg = new StringBuilder();
         }
 
