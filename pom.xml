@@ -103,6 +103,7 @@
     <module>sheldon-impl</module>
     <module>sheldon-rar</module>
     <module>sheldon-examples</module>
+    <module>sheldon-corejava-commands</module>
   </modules>
   <build>
     <defaultGoal>install</defaultGoal>
