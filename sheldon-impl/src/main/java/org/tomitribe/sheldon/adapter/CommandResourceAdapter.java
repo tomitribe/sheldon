@@ -209,6 +209,11 @@ public class CommandResourceAdapter implements ResourceAdapter, SecurityHandler 
                 throw new RuntimeException(e);
             }
         }
+
+        @Override
+        public Object getInstance(Method method) {
+            return this;
+        }
     }
 
     @Override

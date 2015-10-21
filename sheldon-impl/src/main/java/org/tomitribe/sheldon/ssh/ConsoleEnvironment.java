@@ -17,16 +17,24 @@
 package org.tomitribe.sheldon.ssh;
 
 import org.tomitribe.crest.environments.Environment;
+import org.tomitribe.crest.environments.SystemEnvironment;
 
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Map;
 import java.util.Properties;
 
-class ConsoleEnvironment implements Environment {
+class ConsoleEnvironment extends SystemEnvironment implements Environment {
     private final PrintStream out;
     private final InputStream in;
 
     public ConsoleEnvironment(PrintStream out, InputStream in) {
+        this.out = out;
+        this.in = in;
+    }
+
+    public ConsoleEnvironment(Map<Class<?>, Object> services, PrintStream out, InputStream in) {
+        super(services);
         this.out = out;
         this.in = in;
     }

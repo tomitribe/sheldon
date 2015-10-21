@@ -55,7 +55,7 @@ public class CommandCompleterTest {
         final List<CharSequence> candidates = new ArrayList<CharSequence>();
         completer.complete("", 0, candidates);
 
-        assertTrue(candidates.contains("echo"));
+        assertTrue(candidates.contains("echo "));
     }
 
     @Test
@@ -64,7 +64,7 @@ public class CommandCompleterTest {
         final List<CharSequence> candidates = new ArrayList<CharSequence>();
         completer.complete("ec", 1, candidates);
 
-        assertTrue(candidates.contains("echo"));
+        assertTrue(candidates.contains("echo "));
     }
 
     public static class EchoCommand {
