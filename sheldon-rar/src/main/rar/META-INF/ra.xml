@@ -41,7 +41,7 @@
 		<inbound-resourceadapter>
 			<messageadapter>
 				<messagelistener>
-					<messagelistener-type>org.tomitribe.crest.connector.api.CommandListener</messagelistener-type>
+					<messagelistener-type>org.tomitribe.sheldon.api.CommandListener</messagelistener-type>
 					<activationspec>
 						<activationspec-class>org.tomitribe.sheldon.adapter.CommandActivationSpec</activationspec-class>
 					</activationspec>
