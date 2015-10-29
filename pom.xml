@@ -102,8 +102,7 @@
     <module>sheldon-api</module>
     <module>sheldon-impl</module>
     <module>sheldon-rar</module>
-    <module>sheldon-sample-ejb</module>
-    <module>sheldon-sample-ear</module>
+    <module>sheldon-examples</module>
   </modules>
   <build>
     <defaultGoal>install</defaultGoal>

@@ -25,7 +25,7 @@
 
   <parent>
     <groupId>org.tomitribe</groupId>
-    <artifactId>sheldon-parent</artifactId>
+    <artifactId>sheldon-examples</artifactId>
     <version>0.8-SNAPSHOT</version>
   </parent>
 
