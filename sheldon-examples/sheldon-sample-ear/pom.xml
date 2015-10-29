@@ -25,7 +25,7 @@
 
   <parent>
     <groupId>org.tomitribe</groupId>
-    <artifactId>sheldon-parent</artifactId>
+    <artifactId>sheldon-examples</artifactId>
     <version>0.8-SNAPSHOT</version>
   </parent>
 
@@ -45,11 +45,6 @@
       <artifactId>sheldon-rar</artifactId>
       <version>${project.version}</version>
       <type>rar</type>
-    </dependency>
-    <dependency>
-      <groupId>org.tomitribe</groupId>
-      <artifactId>tomitribe-crest-api</artifactId>
-      <scope>runtime</scope>
     </dependency>
   </dependencies>
   <build>
