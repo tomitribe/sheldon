@@ -109,8 +109,8 @@ public class CommandResourceAdapter implements ResourceAdapter, SecurityHandler 
     }
 
     public void endpointActivation(final MessageEndpointFactory messageEndpointFactory, final ActivationSpec activationSpec)
-            throws ResourceException
-    {
+            throws ResourceException {
+        
         final CommandActivationSpec telnetActivationSpec = (CommandActivationSpec) activationSpec;
 
         workManager.scheduleWork(new Work() {
@@ -192,8 +192,7 @@ public class CommandResourceAdapter implements ResourceAdapter, SecurityHandler 
 
         @Override
         public Object invoke(Method method, Object... objects) 
-                throws InvocationTargetException, IllegalAccessException
-        {
+                throws InvocationTargetException, IllegalAccessException {
 
             try {
                 try {
