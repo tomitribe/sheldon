@@ -35,14 +35,14 @@ public class PasswordAuthenticatorImpl implements PasswordAuthenticator {
     public boolean authenticate(String username, String password, ServerSession session) {
         final boolean authenticated = securityHandler.authenticate(username, password);
 
-        if (! authenticated) {
+        if (!authenticated) {
             return false;
         }
 
         if (session != null) {
             session.setAttribute(SshdServer.CREDENTIAL, new Credential(password));
         }
-        
+
         return true;
     }
 }

@@ -20,15 +20,24 @@ import org.tomitribe.crest.environments.Environment;
 
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 
 class ConsoleEnvironment implements Environment {
+    private final Map<Class<?>, Object> services;
     private final PrintStream out;
     private final InputStream in;
 
     public ConsoleEnvironment(PrintStream out, InputStream in) {
         this.out = out;
         this.in = in;
+        this.services = Collections.emptyMap();
+    }
+
+    @Override
+    public <T> T findService(Class<T> type) {
+        return type.cast(services.get(type));
     }
 
     @Override
