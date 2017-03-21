@@ -36,11 +36,6 @@ class ConsoleEnvironment implements Environment {
     }
 
     @Override
-    public <T> T findService(Class<T> type) {
-        return type.cast(services.get(type));
-    }
-
-    @Override
     public PrintStream getOutput() {
         return out;
     }

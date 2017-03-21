@@ -42,7 +42,7 @@
     <version.shrinkwrap.shrinkwrap>1.0.1</version.shrinkwrap.shrinkwrap>
     <version.tomee>1.7.2</version.tomee>
     <version.openejb>4.7.2</version.openejb>
-    <version.crest>0.10-SNAPSHOT</version.crest>
+    <version.crest>0.5</version.crest>
     <maven.checkstyle.plugin.version>2.16</maven.checkstyle.plugin.version>
   </properties>
 
