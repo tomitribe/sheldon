@@ -1,0 +1,18 @@
+= Sheldon :: Core Java Commands
+:showtitle:
+
+Overview
+--------
+Sheldon Core Java Commands provides somes commands that are features of the java.lang.Runtime and similar object
+
+Features
+--------
+* Do gc
+* Get free memory
+* Get max memory
+* Get total memory
+* Get threads
+* Get date
+* Get System env
+* Get System properties
+* Set System properties
