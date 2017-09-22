@@ -25,14 +25,14 @@
 
   <artifactId>sheldon-parent</artifactId>
   <packaging>pom</packaging>
-  <version>0.9</version>
+  <version>0.10-SNAPSHOT</version>
   <name>Sheldon</name>
 
   <scm>
     <connection>scm:git:git@github.com:tomitribe/sheldon.git</connection>
     <url>scm:git:git@github.com:tomitribe/sheldon.git</url>
     <developerConnection>scm:git:git@github.com:tomitribe/sheldon.git</developerConnection>
-    <tag>sheldon-parent-0.9</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
