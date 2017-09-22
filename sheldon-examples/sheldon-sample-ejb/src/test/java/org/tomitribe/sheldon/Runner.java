@@ -42,7 +42,7 @@ public class Runner {
         final File[] deps = Maven.resolver().resolve("org.tomitribe:tomitribe-util:1.1.0",
                 "org.tomitribe:tomitribe-crest-api:0.3").withTransitivity().asFile();
 
-        final File[] rarDeps = Maven.resolver().resolve("org.apache.sshd:sshd-core:0.9.0",
+        final File[] rarDeps = Maven.resolver().resolve("org.apache.sshd:sshd-core:1.6.0",
                 "jline:jline:2.11",
                 "org.tomitribe:tomitribe-crest:0.3",
                 "org.tomitribe:tomitribe-util:1.1.0").withTransitivity().asFile();

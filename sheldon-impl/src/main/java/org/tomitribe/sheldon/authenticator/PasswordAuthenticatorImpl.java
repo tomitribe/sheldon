@@ -17,7 +17,7 @@
 
 package org.tomitribe.sheldon.authenticator;
 
-import org.apache.sshd.server.PasswordAuthenticator;
+import org.apache.sshd.server.auth.password.PasswordAuthenticator;
 import org.apache.sshd.server.session.ServerSession;
 import org.tomitribe.sheldon.adapter.SecurityHandler;
 import org.tomitribe.sheldon.ssh.SshdServer;

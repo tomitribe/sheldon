@@ -16,9 +16,11 @@
  */
 package org.tomitribe.sheldon;
 
-import org.apache.sshd.ClientChannel;
-import org.apache.sshd.ClientSession;
-import org.apache.sshd.SshClient;
+import org.apache.sshd.client.SshClient;
+import org.apache.sshd.client.channel.ClientChannel;
+import org.apache.sshd.client.channel.ClientChannelEvent;
+import org.apache.sshd.client.future.AuthFuture;
+import org.apache.sshd.client.session.ClientSession;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -39,6 +41,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(Arquillian.class)
 public class SSHClientTest {
@@ -49,7 +53,7 @@ public class SSHClientTest {
         final File[] deps = Maven.resolver().resolve("org.tomitribe:tomitribe-util:1.1.0",
                 "org.tomitribe:tomitribe-crest-api:0.3").withTransitivity().asFile();
 
-        final File[] rarDeps = Maven.resolver().resolve("org.apache.sshd:sshd-core:0.9.0",
+        final File[] rarDeps = Maven.resolver().resolve("org.apache.sshd:sshd-core:1.6.0",
                 "jline:jline:2.11",
                 "org.tomitribe:tomitribe-crest:0.3",
                 "org.tomitribe:tomitribe-util:1.1.0").withTransitivity().asFile();
@@ -109,8 +113,11 @@ public class SSHClientTest {
     public void testShouldConnectViaSSHAndRunCommand() throws Exception {
         SshClient client = SshClient.setUpDefaultClient();
         client.start();
-        ClientSession session = client.connect("localhost", 2222).await().getSession();
-        session.authPassword("tomee", "tomee").await().isSuccess();
+        ClientSession session = client.connect("tomee", "localhost", 2222).verify(7L, TimeUnit.SECONDS).getSession();
+        session.addPasswordIdentity("tomee");
+        final AuthFuture authFuture = session.auth();
+        authFuture.await();
+        Assert.assertTrue(authFuture.isSuccess());
         ClientChannel channel = session.createChannel(ClientChannel.CHANNEL_SHELL);
 
         PipedOutputStream pipedIn = new PipedOutputStream();
@@ -127,7 +134,7 @@ public class SSHClientTest {
         pipedIn.write("exit\n".getBytes());
         pipedIn.flush();
 
-        channel.waitFor(ClientChannel.CLOSED, 0);
+        channel.waitFor(Collections.singleton(ClientChannelEvent.CLOSED), 0);
 
         channel.close(false);
         client.stop();

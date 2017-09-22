@@ -19,10 +19,10 @@ package org.tomitribe.sheldon.ssh;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.sshd.SshServer;
-import org.apache.sshd.common.Session;
-import org.apache.sshd.common.util.SecurityUtils;
-import org.apache.sshd.server.keyprovider.PEMGeneratorHostKeyProvider;
+import org.apache.sshd.common.session.Session;
+import org.apache.sshd.common.util.security.SecurityUtils;
+import org.apache.sshd.common.util.security.bouncycastle.BouncyCastleGeneratorHostKeyProvider;
+import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 import org.tomitribe.sheldon.adapter.SecurityHandler;
 import org.tomitribe.sheldon.authenticator.PasswordAuthenticatorImpl;
@@ -63,11 +63,10 @@ public class SshdServer {
 
         final String basePath = new File(System.getProperty("user.dir")).getAbsolutePath();
         if (SecurityUtils.isBouncyCastleRegistered()) {
-            sshServer.setKeyPairProvider(new PEMGeneratorHostKeyProvider(new File(basePath, KEY_NAME + ".pem")
-                    .getPath()));
+            sshServer.setKeyPairProvider(new BouncyCastleGeneratorHostKeyProvider(new File(basePath, KEY_NAME + ".pem")
+                    .toPath()));
         } else {
-            sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(new File(basePath, KEY_NAME + ".ser")
-                    .getPath()));
+            sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(new File(basePath, KEY_NAME + ".ser")));
         }
 
         sshServer.setShellFactory(new CrestComandsFactory(session, securityHandler));
@@ -83,7 +82,7 @@ public class SshdServer {
     public void stop() {
         try {
             sshServer.stop();
-        } catch (InterruptedException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
