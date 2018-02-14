@@ -25,16 +25,16 @@ Features
 Demo
 ----
 
-image:https://raw.githubusercontent.com/tomitribe/sheldon/master/terminal.gif[Demo]
+image:terminal.gif[Demo]
 
 
 Creating commands
 -----------------
 
 Defining new commands for the connector is straightforward. Define a new MDB with the +@MessageDriven+ annotation.
-The MDB needs to implement the +org.tomitribe.sheldon.api.CrestListener+ interface. This is simply a marker interface
+The MDB needs to implement the +org.apache.tomee.sheldon.api.CrestListener+ interface. This is simply a marker interface
 with no methods. Each command can then be provided as a public method with a +@Command+ annotation, with any desired
-arguments, and any options annotated with +@Option+. Further Crest documentation is available here: https://github.com/tomitribe/crest/blob/master/README.adoc.
+arguments, and any options annotated with +@Option+. Further Crest documentation is available here: README.adoc.
 
 Here's a simple example that provides a "freeMemory" command. This returns the free memory in the JVM - in MB by
 default.
@@ -103,13 +103,13 @@ If you use Maven, you can achieve the above structure using the following in you
 ----
   <dependencies>
     <dependency>
-      <groupId>org.tomitribe</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>sheldon-sample-ejb</artifactId>
       <version>0.8</version>
       <type>ejb</type>
     </dependency>
     <dependency>
-      <groupId>org.tomitribe</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>sheldon-rar</artifactId>
       <version>0.8</version>
       <type>rar</type>
@@ -139,11 +139,11 @@ If you use Maven, you can achieve the above structure using the following in you
           </archive>
           <modules>
             <rarModule>
-              <groupId>org.tomitribe</groupId>
+              <groupId>org.apache.tomee.sheldon</groupId>
               <artifactId>sheldon-rar</artifactId>
             </rarModule>
             <ejbModule>
-              <groupId>org.tomitribe</groupId>
+              <groupId>org.apache.tomee.sheldon</groupId>
               <artifactId>sheldon-sample-ejb</artifactId>
             </ejbModule>
           </modules>

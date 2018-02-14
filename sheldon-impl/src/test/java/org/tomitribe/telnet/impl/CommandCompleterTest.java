@@ -16,18 +16,18 @@
  */
 package org.tomitribe.telnet.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jline.console.completer.Completer;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.tomitribe.crest.Main;
 import org.tomitribe.crest.api.Command;
-import org.tomitribe.sheldon.ssh.CommandCompleter;
+import org.apache.tomee.sheldon.ssh.CommandCompleter;
 
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CommandCompleterTest {
 
