@@ -19,7 +19,7 @@ package org.superbiz;
 import org.tomitribe.crest.api.Command;
 import org.tomitribe.crest.api.Default;
 import org.tomitribe.crest.api.Option;
-import org.tomitribe.sheldon.api.CommandListener;
+import org.apache.tomee.sheldon.api.CommandListener;
 import org.tomitribe.util.Size;
 import org.tomitribe.util.SizeUnit;
 
@@ -46,14 +46,14 @@ public class RuntimeBean implements CommandListener {
     }
 
     @Command
-    public String maxMemory(@Option({"unit","u"}) @Default("MEGABYTES") SizeUnit unit) {
+    public String maxMemory(@Option({"unit", "u"}) @Default("MEGABYTES") SizeUnit unit) {
         final long bytes = Runtime.getRuntime().maxMemory();
         final Size size = new Size(unit.convert(bytes, SizeUnit.BYTES), unit);
         return size.toString();
     }
 
     @Command
-    public String totalMemory(@Option({"unit","u"}) @Default("MEGABYTES") SizeUnit unit) {
+    public String totalMemory(@Option({"unit", "u"}) @Default("MEGABYTES") SizeUnit unit) {
         final long bytes = Runtime.getRuntime().totalMemory();
         final Size size = new Size(unit.convert(bytes, SizeUnit.BYTES), unit);
         return size.toString();

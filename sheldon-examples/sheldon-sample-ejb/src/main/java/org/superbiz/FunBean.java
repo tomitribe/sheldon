@@ -19,10 +19,9 @@ package org.superbiz;
 
 import org.tomitribe.crest.api.Command;
 import org.tomitribe.crest.api.Option;
-import org.tomitribe.sheldon.api.CommandListener;
+import org.apache.tomee.sheldon.api.CommandListener;
 
 import javax.ejb.MessageDriven;
-
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
